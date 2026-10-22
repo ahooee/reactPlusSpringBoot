@@ -1,0 +1,117 @@
+/* ── Horizontal reel strips (Digikala-style) — shared by home & books ── */
+
+.reel {
+    margin: 4px 0 18px;
+}
+
+.reel-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 2px 10px;
+}
+
+.reel-head h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-size: 16.5px;
+    color: var(--text-h);
+}
+
+.reel-accent {
+    width: 5px;
+    height: 18px;
+    border-radius: 4px;
+    background: var(--accent, #aa3bff);
+    display: inline-block;
+}
+
+.reel-hint {
+    margin-inline-start: auto;
+    font-size: 11.5px;
+    color: var(--text);
+    opacity: 0.75;
+}
+
+.reel-wrap {
+    position: relative;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--card-bg);
+    padding: 14px 8px 10px;
+}
+
+.reel-track {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+    padding: 2px 4px 6px;
+}
+
+.reel-track::-webkit-scrollbar {
+    display: none;
+}
+
+.reel-card {
+    flex: 0 0 164px;
+    scroll-snap-align: start;
+}
+
+.reel-card .book-card,
+.reel-card .amz-card {
+    width: 100%;
+    height: 100%;
+}
+
+.reel-card .amz-thumb {
+    aspect-ratio: 2 / 3;
+}
+
+/* Edge arrows (round chevrons; logical insets flip for RTL) */
+.reel-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    color: var(--text-h);
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
+    z-index: 2;
+    transition: opacity 0.15s, filter 0.15s;
+}
+
+.reel-arrow:hover {
+    filter: brightness(1.05);
+}
+
+.reel-arrow.off {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.reel-arrow-start {
+    inset-inline-start: -12px;
+}
+
+.reel-arrow-end {
+    inset-inline-end: -12px;
+}
+
+@media (max-width: 900px) {
+    .reel-card {
+        flex-basis: 150px;
+    }
+}

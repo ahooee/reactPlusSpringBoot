@@ -125,3 +125,9 @@ html[dir="rtl"] .hero-search input {
 .cta-band p {
     margin-bottom: 24px;
 }
+
+/* Book reels (featured / recommended / best sellers) */
+.home-reels {
+    padding-top: 6px;
+    padding-bottom: 14px;
+}

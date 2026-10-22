@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Breadcrumbs from "../components/Breadcrumbs";
 import Reveal from "../components/Reveal";
 import BookCard from "../components/BookCard";
+import BookReel from "../components/BookReel";
 import { showPaperSoon } from "../components/PaperSoon";
 import { apiFetch } from "../lib/api";
 import { useLanguage } from "../context/LanguageContext";
@@ -287,17 +288,17 @@ export default function Books({ kind: kindProp }) {
                     <div className="bk-main">
                         {state === "done" && !searchingMode && showReels && reels && (
                             <>
-                                <Reel
+                                <BookReel
                                     title={t("books.reelFeatured")}
                                     icon="🌟"
                                     items={reels.featured}
                                 />
-                                <Reel
+                                <BookReel
                                     title={t("books.reelRecommended")}
                                     icon="✨"
                                     items={reels.recommended}
                                 />
-                                <Reel
+                                <BookReel
                                     title={t("books.reelTopSellers")}
                                     icon="🔥"
                                     items={reels.topSellers}
@@ -379,68 +380,5 @@ export default function Books({ kind: kindProp }) {
                 </div>
             </main>
         </>
-    );
-}
-
-/** Digikala-style horizontal reel: header + scrollable strip with arrows. */
-function Reel({ title, icon, items }) {
-    const { t, lang } = useLanguage();
-    const trackRef = useRef(null);
-    const [edge, setEdge] = useState({ start: true, end: false });
-
-    if (!items || items.length === 0) return null;
-
-    function updateEdges() {
-        const el = trackRef.current;
-        if (!el) return;
-        const max = el.scrollWidth - el.clientWidth;
-        const pos = Math.abs(el.scrollLeft);   // RTL scrollLeft goes negative
-        setEdge({ start: pos <= 1, end: pos >= max - 1 });
-    }
-
-    function slide(dir) {
-        const el = trackRef.current;
-        if (!el) return;
-        const rtl = getComputedStyle(el).direction === "rtl";
-        const w = el.clientWidth * 0.9;
-        el.scrollBy({ left: dir * (rtl ? -w : w), behavior: "smooth" });
-    }
-
-    const startGlyph = lang === "fa" ? "›" : "‹";
-    const endGlyph = lang === "fa" ? "‹" : "›";
-
-    return (
-        <section className="bk-reel">
-            <div className="bk-reel-head">
-                <h3>
-                    <span className="bk-reel-accent" aria-hidden="true" />
-                    {icon} {title}
-                </h3>
-                <span className="bk-reel-hint">{t("books.reelHint")}</span>
-            </div>
-            <div className="bk-reel-wrap">
-                <button
-                    className={`bk-arrow bk-arrow-start${edge.start ? " off" : ""}`}
-                    onClick={() => slide(-1)}
-                    aria-label={t("common.prev")}
-                >
-                    {startGlyph}
-                </button>
-                <div className="bk-reel-track" ref={trackRef} onScroll={updateEdges}>
-                    {items.map(b => (
-                        <div className="bk-reel-card" key={b.id}>
-                            <BookCard book={b} grid />
-                        </div>
-                    ))}
-                </div>
-                <button
-                    className={`bk-arrow bk-arrow-end${edge.end ? " off" : ""}`}
-                    onClick={() => slide(1)}
-                    aria-label={t("common.next")}
-                >
-                    {endGlyph}
-                </button>
-            </div>
-        </section>
     );
 }

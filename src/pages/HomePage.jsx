@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import BookCard from "../components/BookCard";
+import BookReel from "../components/BookReel";
 import ProductRail from "../components/ProductRail";
 import Reveal from "../components/Reveal";
 import { apiFetch } from "../lib/api";
@@ -119,6 +120,7 @@ export default function HomePage() {
     const [books, setBooks] = useState([]);
     const [categories, setCategories] = useState([]);
     const [posts, setPosts] = useState([]);
+    const [reels, setReels] = useState(null);
     const [heroQuery, setHeroQuery] = useState("");
     const { t, lang } = useLanguage();
     const navigate = useNavigate();
@@ -128,6 +130,7 @@ export default function HomePage() {
         apiFetch("/api/settings").then(setSettings).catch(() => {});
         apiFetch("/api/books").then(data => setBooks(Array.isArray(data) ? data : [])).catch(() => {});
         apiFetch("/api/books/categories").then(data => setCategories(Array.isArray(data) ? data : [])).catch(() => {});
+        apiFetch("/api/books/reels").then(data => setReels(data || null)).catch(() => {});
         apiFetch("/api/posts").then(setPosts).catch(() => {});
     }, []);
 
@@ -186,6 +189,14 @@ export default function HomePage() {
                                 </Reveal>
                             ))}
                         </div>
+                    </section>
+                )}
+
+                {reels && (
+                    <section className="section home-reels">
+                        <BookReel title={t("books.reelFeatured")} icon="🌟" items={reels.featured} />
+                        <BookReel title={t("books.reelRecommended")} icon="✨" items={reels.recommended} />
+                        <BookReel title={t("books.reelTopSellers")} icon="🔥" items={reels.topSellers} />
                     </section>
                 )}
 
