@@ -290,7 +290,7 @@ export default function ProductDetail() {
                             { to: "/shop", label: t("nav.shop") },
                             { to: "/books", label: t("books.titleAll") },
                             ...(normalizeBookType(product.bookType) === "PAPER"
-                                ? [{ to: "/books/paper-books", label: t("books.titlePaper") }]
+                                ? [{ to: "/books/paper-books", label: t("books.titlePaper"), soon: true }]
                                 : [{ to: "/books/ebooks", label: t("books.titleEbooks") }]),
                             { label: product.name },
                         ]} />

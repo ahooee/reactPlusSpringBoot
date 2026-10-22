@@ -1,0 +1,77 @@
+/* Paper-books "coming soon" overlay: dim + 3s circular countdown. */
+
+.paper-soon {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: grid;
+    place-items: center;
+    background: rgb(15 15 20 / 55%);
+    animation: paper-soon-fade 0.25s ease;
+}
+
+.paper-soon-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    background: var(--card-bg, #fff);
+    color: var(--text-h, #222);
+    border-radius: 18px;
+    padding: 22px 36px;
+    box-shadow: 0 12px 40px rgb(0 0 0 / 25%);
+    animation: paper-soon-pop 0.25s ease;
+}
+
+.paper-soon-emoji {
+    font-size: 26px;
+    line-height: 1;
+}
+
+.paper-soon-ring {
+    width: 64px;
+    height: 64px;
+    transform: rotate(-90deg);
+}
+
+.paper-soon-ring circle {
+    fill: none;
+    stroke-width: 5;
+}
+
+.paper-soon-ring-bg {
+    stroke: rgb(0 0 0 / 8%);
+}
+
+.paper-soon-ring-fg {
+    stroke: var(--accent, #aa3bff);
+    stroke-linecap: round;
+    stroke-dasharray: 163.36;          /* 2πr, r = 26 */
+    animation: paper-soon-ring 3s linear forwards;
+    transform-origin: center;
+}
+
+.paper-soon-title {
+    font-size: 15.5px;
+    font-weight: 800;
+}
+
+.paper-soon-sub {
+    font-size: 12.5px;
+    color: var(--text, #666);
+}
+
+@keyframes paper-soon-fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes paper-soon-pop {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes paper-soon-ring {
+    from { stroke-dashoffset: 163.36; }
+    to { stroke-dashoffset: 0; }
+}

@@ -4,6 +4,7 @@ import Navbar from "../components/Navbar";
 import Breadcrumbs from "../components/Breadcrumbs";
 import Reveal from "../components/Reveal";
 import BookCard from "../components/BookCard";
+import { showPaperSoon } from "../components/PaperSoon";
 import { apiFetch } from "../lib/api";
 import { useLanguage } from "../context/LanguageContext";
 import { usePageTitle } from "../lib/usePageTitle";
@@ -170,6 +171,10 @@ export default function Books({ kind: kindProp }) {
                             <Link
                                 className={`bk-side-item${kind === "paper" ? " on" : ""}`}
                                 to="/books/paper-books"
+                                onClick={e => {
+                                    e.preventDefault();
+                                    showPaperSoon();
+                                }}
                             >
                                 <span>📕 {t("books.titlePaper")}</span>
                             </Link>
@@ -237,7 +242,12 @@ export default function Books({ kind: kindProp }) {
                             <Link className={`cat-chip${kind === "ebook" ? " on" : ""}`} to="/books/ebooks">
                                 📄 {t("books.titleEbooks")}
                             </Link>
-                            <Link className={`cat-chip${kind === "paper" ? " on" : ""}`} to="/books/paper-books">
+                            <Link className={`cat-chip${kind === "paper" ? " on" : ""}`} to="/books/paper-books"
+                                onClick={e => {
+                                    e.preventDefault();
+                                    showPaperSoon();
+                                }}
+                            >
                                 📕 {t("books.titlePaper")}
                             </Link>
                             <button

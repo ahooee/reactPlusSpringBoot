@@ -34,6 +34,7 @@ import OrderTrack from "./pages/OrderTrack";
 import ProtectedRoute from "./components/ProtectedRoute";
 import CartDrawer from "./components/CartDrawer";
 import Navbar from "./components/Navbar";
+import PaperSoon from "./components/PaperSoon";
 import { ToastProvider } from "./context/ToastContext";
 
 function Admin({ children }) {
@@ -89,6 +90,7 @@ function App() {
                 <Route path="*" element={<Page />} />
                 </Routes>
                 <CartDrawer />
+                <PaperSoon />
             </ToastProvider>
         </BrowserRouter>
     );

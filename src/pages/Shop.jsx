@@ -184,7 +184,7 @@ export default function Shop() {
                     ...(activeType === "PDF"
                         ? [{ to: "/books/ebooks", label: t("books.titleEbooks") }]
                         : activeType === "PAPER"
-                            ? [{ to: "/books/paper-books", label: t("books.titlePaper") }]
+                            ? [{ to: "/books/paper-books", label: t("books.titlePaper"), soon: true }]
                             : []),
                     ...(activeCat !== "all" ? [{ label: activeCat === "none" ? t("shop.uncategorized") : (catLabel(categories.find(c => c.slug === activeCat) || {}) || activeCat) }] : []),
                 ]} />
