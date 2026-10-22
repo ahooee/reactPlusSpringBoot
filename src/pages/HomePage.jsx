@@ -168,6 +168,14 @@ export default function HomePage() {
                     </form>
                 </div>
 
+                {reels && (
+                    <section className="section home-reels">
+                        <BookReel title={t("books.reelFeatured")} icon="🌟" items={reels.featured} />
+                        <BookReel title={t("books.reelRecommended")} icon="✨" items={reels.recommended} />
+                        <BookReel title={t("books.reelTopSellers")} icon="🔥" items={reels.topSellers} />
+                    </section>
+                )}
+
                 {categories.length > 0 && (
                     <section className="section">
                         <Reveal>
@@ -189,14 +197,6 @@ export default function HomePage() {
                                 </Reveal>
                             ))}
                         </div>
-                    </section>
-                )}
-
-                {reels && (
-                    <section className="section home-reels">
-                        <BookReel title={t("books.reelFeatured")} icon="🌟" items={reels.featured} />
-                        <BookReel title={t("books.reelRecommended")} icon="✨" items={reels.recommended} />
-                        <BookReel title={t("books.reelTopSellers")} icon="🔥" items={reels.topSellers} />
                     </section>
                 )}
 
