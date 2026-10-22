@@ -1,0 +1,52 @@
+.orders-grid {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 24px;
+    margin-top: 20px;
+}
+@media (max-width: 860px) {
+    .orders-grid { grid-template-columns: 1fr; }
+}
+.orders-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.order-item {
+    text-align: start;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    border-radius: 10px;
+    padding: 10px 12px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    color: inherit;
+}
+.order-item.active {
+    border-color: var(--accent);
+}
+.order-item-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+.order-item-meta {
+    font-size: 12px;
+}
+.order-status {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    border: 1px solid transparent;
+    white-space: nowrap;
+}
+.order-ordered { background: rgba(249, 115, 22, 0.12); color: #c2570b; }
+.order-confirmed { background: rgba(14, 165, 233, 0.12); color: #0369a1; }
+.order-shipped { background: rgba(170, 59, 255, 0.12); color: var(--accent); }
+.order-delivered { background: rgba(22, 163, 74, 0.12); color: #15803d; }
+.order-cancelled { background: var(--code-bg); color: var(--text); }

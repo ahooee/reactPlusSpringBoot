@@ -1,0 +1,264 @@
+.amz-subnav {
+    position: sticky;
+    top: 0;
+    z-index: 80;
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    padding: 10px 5%;
+    background: #131921;
+    color: #fff;
+    font-size: 14px;
+}
+
+.amz-subnav a {
+    color: #fff;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.amz-subnav a:hover {
+    color: #febd69;
+}
+
+.amz-count {
+    margin-inline-start: auto;
+    color: #ccc;
+    font-size: 12.5px;
+    white-space: nowrap;
+}
+
+.amz-main {
+    background: #e3e6e6;
+    padding-bottom: 56px;
+}
+
+:root[data-mode="dark"] .amz-main {
+    background: #1a1d24;
+}
+
+/* Hero carousel */
+.amz-hero {
+    position: relative;
+    overflow: hidden;
+    color: #fff;
+    padding: 64px 8% 72px;
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+}
+
+.amz-hero-a { background: linear-gradient(115deg, #131921 30%, #232f3e 70%, #37475a); }
+.amz-hero-b { background: linear-gradient(115deg, #7a2e00 10%, #c45500 55%, #ff9900); }
+.amz-hero-c { background: linear-gradient(115deg, #0f2e3d 20%, #146eb4 75%, #29a8df); }
+
+.amz-hero-inner {
+    max-width: 640px;
+    animation: amzHeroIn 0.5s ease;
+}
+
+@keyframes amzHeroIn {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: none; }
+}
+
+.amz-eyebrow {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #febd69;
+    margin-bottom: 10px;
+}
+
+.amz-hero-inner h1 {
+    color: #fff;
+    font-size: clamp(28px, 4.5vw, 46px);
+    margin: 0 0 12px;
+    line-height: 1.2;
+}
+
+.amz-hero-inner p {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.88);
+    margin-bottom: 22px;
+}
+
+.amz-hero-cta {
+    display: inline-block;
+    background: #ffd814;
+    border: 1px solid #fcd200;
+    color: #111 !important;
+    border-radius: 999px;
+    padding: 10px 28px;
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.amz-hero-cta:hover {
+    background: #f7ca00;
+}
+
+.amz-hero-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 46px;
+    height: 80px;
+    background: transparent;
+    border: 2px solid transparent;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 34px;
+    cursor: pointer;
+}
+
+.amz-hero-arrow:hover {
+    border-color: #fff;
+}
+
+.amz-hero-arrow.prev { inset-inline-start: 12px; }
+.amz-hero-arrow.next { inset-inline-end: 12px; }
+
+.amz-dots {
+    position: absolute;
+    bottom: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+}
+
+.amz-dots button {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.45);
+    cursor: pointer;
+    padding: 0;
+}
+
+.amz-dots button.on {
+    background: #fff;
+}
+
+/* Product rows */
+.amz-row {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 22px 24px 6px;
+}
+
+.amz-row-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.amz-row-head h2 {
+    margin: 0;
+    font-size: 21px;
+}
+
+.amz-row-nav {
+    display: flex;
+    gap: 8px;
+}
+
+.amz-row-nav button {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text-h);
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.amz-row-nav button:hover {
+    background: var(--code-bg);
+}
+
+.amz-track {
+    display: flex;
+    gap: 14px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.amz-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 14px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.amz-grid .reveal {
+    min-width: 0;
+}
+
+/* Category filter chips */
+.cat-chips {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+}
+
+.cat-chip {
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text-h);
+    border-radius: 999px;
+    padding: 7px 16px;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cat-chip-img {
+    width: 26px;
+    height: 26px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--code-bg);
+}
+
+.cat-chip:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.cat-chip.on {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+}
+
+@media (max-width: 640px) {
+    .amz-hero {
+        padding: 44px 6% 60px;
+        min-height: 240px;
+    }
+    .amz-row {
+        padding: 16px 12px 4px;
+    }
+}

@@ -1,0 +1,62 @@
+.signup-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.signup-tabs button {
+    flex: 1;
+    border: 1px solid var(--border);
+    background: var(--code-bg);
+    color: var(--text);
+    border-radius: 10px;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.signup-tabs button.on {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+}
+
+.signup-code-input {
+    font-size: 24px !important;
+    letter-spacing: 8px;
+    text-align: center;
+    font-weight: 800;
+}
+
+.link-btn {
+    background: none;
+    border: none;
+    color: var(--accent);
+    cursor: pointer;
+    font-size: inherit;
+    padding: 0;
+    text-decoration: underline;
+}
+
+.signup-success {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+    padding: 12px 0;
+}
+
+.signup-success-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 999px;
+    background: #16a34a;
+    color: #fff;
+    font-size: 32px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

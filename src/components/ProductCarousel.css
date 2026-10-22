@@ -1,0 +1,109 @@
+.carousel-section {
+    padding: 56px 5%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.carousel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.carousel-head h2 {
+    font-size: 28px;
+    margin: 0;
+}
+
+.carousel-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.carousel-actions button {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text-h);
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.carousel-actions button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+.carousel-all {
+    margin-left: 8px;
+    font-size: 14px;
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.carousel-track {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding: 8px 4px 20px;
+    scrollbar-width: thin;
+}
+
+.carousel-track .reveal {
+    scroll-snap-align: start;
+    flex: 0 0 260px;
+}
+
+.carousel-card {
+    display: block;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.carousel-card:hover {
+    transform: translateY(-6px) scale(1.01);
+    box-shadow: var(--shadow);
+}
+
+.carousel-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    display: block;
+    background: var(--code-bg);
+}
+
+.carousel-placeholder {
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--code-bg);
+    color: var(--text);
+}
+
+.carousel-card-body {
+    padding: 14px 16px 18px;
+}
+
+.carousel-card-body h3 {
+    margin: 0 0 6px;
+    font-size: 17px;
+}
+
+.carousel-card-body .price {
+    font-weight: 700;
+    color: var(--accent);
+}

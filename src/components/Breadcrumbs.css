@@ -1,0 +1,45 @@
+.crumbs {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 8px;
+    font-size: 13px;
+    color: var(--text);
+    margin-bottom: 14px;
+}
+
+.crumb {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.crumb a {
+    color: var(--text);
+    text-decoration: none;
+}
+
+.crumb a:hover {
+    color: var(--accent);
+    text-decoration: underline;
+}
+
+.crumb-sep {
+    color: var(--text);
+    opacity: 0.45;
+    display: inline-block;
+}
+
+html[dir="rtl"] .crumb-sep {
+    transform: scaleX(-1);
+}
+
+.crumb-current {
+    color: var(--text-h);
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 42vw;
+}

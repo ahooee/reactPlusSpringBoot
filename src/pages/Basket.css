@@ -1,0 +1,75 @@
+.basket-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 24px;
+    align-items: start;
+}
+
+.basket-lines {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+}
+
+.basket-lines > .small-btn {
+    align-self: flex-start;
+}
+
+.basket-summary {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+    background: var(--bg);
+    position: sticky;
+    top: 76px;
+}
+
+.basket-summary h3 {
+    margin: 0 0 12px;
+}
+
+.basket-empty,
+.basket-success {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    padding: 48px 24px;
+    text-align: center;
+}
+
+.basket-identity {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    background: var(--code-bg);
+}
+
+.basket-identity-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 14px;
+}
+
+.basket-identity-row b {
+    color: var(--text-h);
+}
+
+.basket-success h2 {
+    margin: 0;
+}
+
+@media (max-width: 860px) {
+    .basket-layout {
+        grid-template-columns: 1fr;
+    }
+    .basket-summary {
+        position: static;
+    }
+}

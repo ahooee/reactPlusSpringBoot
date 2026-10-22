@@ -1,0 +1,184 @@
+.amz-card {
+    position: relative;
+    flex: 0 0 200px;
+    width: 200px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    scroll-snap-align: start;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.amz-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow);
+}
+
+.amz-card.grid {
+    flex: none;
+    width: auto;
+}
+
+.amz-thumb {
+    display: block;
+    position: relative;
+    aspect-ratio: 1 / 1;
+    background: var(--code-bg);
+    overflow: hidden;
+}
+
+.amz-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.amz-off {
+    position: absolute;
+    top: 8px;
+    inset-inline-start: 8px;
+    background: #b12704;
+    color: #fff;
+    font-size: 11.5px;
+    font-weight: 800;
+    border-radius: 999px;
+    padding: 2px 9px;
+    z-index: 2;
+}
+
+.amz-old {
+    text-decoration: line-through;
+    color: var(--text);
+    font-size: 12.5px;
+    margin-inline-start: 8px;
+}
+
+.amz-ph {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 44px;
+}
+
+.amz-info {
+    padding: 10px 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+}
+
+.amz-title {
+    font-size: 13.5px;
+    color: var(--text-h);
+    text-decoration: none;
+    line-height: 1.45;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    min-height: 39px;
+}
+
+.amz-title:hover {
+    color: var(--accent);
+}
+
+.amz-price-row {
+    display: flex;
+    align-items: baseline;
+}
+
+.amz-price {
+    color: #b12704;
+    font-size: 19px;
+    font-weight: 700;
+}
+
+:root[data-mode="dark"] .amz-price {
+    color: #ff8a66;
+}
+
+.amz-stock {
+    font-size: 12px;
+    color: #067d62;
+}
+
+.amz-stock.out {
+    color: #b12704;
+}
+
+.amz-add {
+    margin-top: auto;
+    background: #0284c7;
+    border: 1px solid #0284c7;
+    border-radius: 999px;
+    padding: 8px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    color: #fff;
+    font-weight: 700;
+    transition: filter 0.15s;
+}
+
+.amz-add:hover:not(:disabled) {
+    filter: brightness(0.88);
+}
+
+.amz-add:disabled {
+    background: var(--code-bg);
+    border-color: var(--border);
+    color: var(--text);
+    cursor: not-allowed;
+}
+
+.amz-add.amz-remove {
+    background: #b12704;
+    border: 1px solid #b12704;
+    color: #fff;
+}
+
+.amz-add.amz-remove:hover {
+    background: #8f1f03;
+    border-color: #8f1f03;
+    color: #fff;
+}
+
+.amz-incart {
+    font-size: 11px;
+    color: var(--accent);
+    text-align: center;
+}
+
+.amz-cat {
+    font-size: 11.5px;
+    color: var(--text);
+    text-decoration: none;
+}
+
+.amz-type {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    color: #0369a1;
+    background: rgba(14, 165, 233, 0.12);
+    border-radius: 999px;
+    padding: 2px 10px;
+    width: fit-content;
+}
+
+.amz-type.paper {
+    color: #9a3412;
+    background: rgba(249, 115, 22, 0.12);
+}
+
+.amz-cat:hover {
+    color: var(--accent);
+}

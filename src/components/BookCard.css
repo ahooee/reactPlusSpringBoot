@@ -1,0 +1,105 @@
+/* Book covers are portrait, unlike square product thumbnails. */
+.book-card .amz-thumb {
+    aspect-ratio: 2 / 3;
+}
+
+.book-card .amz-thumb img {
+    object-fit: cover;
+}
+
+.book-card .book-category {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.book-card .book-format {
+    margin-top: auto;
+    text-transform: uppercase;
+}
+
+.book-detail {
+    display: grid;
+    grid-template-columns: minmax(180px, 280px) minmax(0, 1fr);
+    gap: 32px;
+    align-items: start;
+    margin: 24px 0 48px;
+}
+
+.book-detail-cover {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--code-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 64px;
+}
+
+.book-detail-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.book-detail h1 {
+    margin: 0 0 6px;
+    line-height: 1.35;
+}
+
+.book-detail-author {
+    font-size: 16px;
+    color: var(--text);
+    margin: 0 0 18px;
+}
+
+.book-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px 24px;
+    margin: 20px 0;
+    padding: 18px 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+}
+
+.book-meta div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.book-meta dt,
+.book-meta .book-meta-label {
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text);
+}
+
+.book-meta dd {
+    margin: 0;
+    color: var(--text-h);
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+.book-description {
+    white-space: pre-line;
+    line-height: 1.8;
+}
+
+@media (max-width: 640px) {
+    .book-detail {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .book-detail-cover {
+        max-width: 240px;
+    }
+}
