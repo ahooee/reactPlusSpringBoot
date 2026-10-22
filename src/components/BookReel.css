@@ -47,7 +47,6 @@
     display: flex;
     gap: 12px;
     overflow-x: auto;
-    scroll-snap-type: x proximity;
     scrollbar-width: none;
     padding: 2px 4px 6px;
     cursor: grab;
@@ -70,7 +69,9 @@
 
 .reel-card {
     flex: 0 0 164px;
-    scroll-snap-align: start;
+    will-change: transform;
+    transform-origin: 50% 85%; /* wave pivots near the shelf line */
+    backface-visibility: hidden;
 }
 
 .reel-card .book-card,
