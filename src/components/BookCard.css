@@ -7,6 +7,62 @@
     object-fit: cover;
 }
 
+/* Quick price + cart row at the bottom of library book cards. */
+.book-buyrow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: auto;
+}
+
+.book-buyprice {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--text-h);
+    flex: 1;
+}
+
+.book-buy-add,
+.book-buy-x {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 800;
+    line-height: 1;
+    cursor: pointer;
+    transition: filter 0.15s, transform 0.08s;
+}
+
+.book-buyrow button:hover:not(:disabled) {
+    filter: brightness(1.08);
+}
+
+.book-buyrow button:active:not(:disabled) {
+    transform: scale(0.94);
+}
+
+.book-buyrow button:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+.book-buy-add {
+    background: #16a34a;
+    border: 1px solid #16a34a;
+    color: #fff;
+}
+
+.book-buy-x {
+    background: #b12704;
+    border: 1px solid #b12704;
+    color: #fff;
+}
+
 .book-card .book-category {
     overflow: hidden;
     text-overflow: ellipsis;

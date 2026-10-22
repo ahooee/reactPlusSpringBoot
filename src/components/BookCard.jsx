@@ -1,17 +1,45 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { imageSrc } from "../lib/api";
+import { money } from "../lib/price";
 import { useLanguage } from "../context/LanguageContext";
+import { useCart } from "../context/CartContext";
+import { useTheme } from "../context/ThemeContext";
+import { useToast } from "../context/ToastContext";
 import "./ProductCard.css";
 import "./BookCard.css";
 
-/** Catalog card for a row from the books table (no cart: these are library books). */
+/**
+ * Catalog card for a row from the books table. The bottom row shows the
+ * price with a tiny add-to-cart (and × remove once in cart) — hideable
+ * from Admin → Settings → Shop ("library.cardBuyButtons").
+ */
 export default function BookCard({ book, grid = false }) {
     const [broken, setBroken] = useState(false);
-    const { lang } = useLanguage();
+    const [adding, setAdding] = useState(false);
+    const { lang, t } = useLanguage();
+    const { items, addLibraryBook, remove } = useCart();
+    const { settings } = useTheme();
+    const { showToast } = useToast();
+
+    const showBuyRow = (settings["library.cardBuyButtons"] ?? "true") !== "false";
+    const buyLine = book.id ? items.find(i => i.bookId === book.id) : null;
     const to = `/books/${encodeURIComponent(book.id)}`;
     const cover = book.coverUrl ? imageSrc(book.coverUrl) : "";
     const format = (book.format || "ebook").toUpperCase();
+
+    async function addToCart() {
+        if (adding) return;
+        setAdding(true);
+        try {
+            await addLibraryBook(book.id);
+            showToast(t("books.added"));
+        } catch (err) {
+            showToast(err?.message || t("books.buyError"));
+        } finally {
+            setAdding(false);
+        }
+    }
 
     return (
         <div className={`amz-card book-card${grid ? " grid" : ""}`}>
@@ -39,6 +67,31 @@ export default function BookCard({ book, grid = false }) {
                     </Link>
                 )}
                 <span className="amz-type book-format">{format}</span>
+                {showBuyRow && (
+                    <div className="book-buyrow">
+                        {book.price != null && <span className="book-buyprice">{money(book.price, lang)}</span>}
+                        {buyLine ? (
+                            <button
+                                className="book-buy-x"
+                                title={t("cart.remove")}
+                                aria-label={t("cart.remove")}
+                                onClick={() => remove(buyLine.id)}
+                            >
+                                ×
+                            </button>
+                        ) : (
+                            <button
+                                className="book-buy-add"
+                                title={t("shop.addToCart")}
+                                aria-label={t("shop.addToCart")}
+                                disabled={adding}
+                                onClick={addToCart}
+                            >
+                                +
+                            </button>
+                        )}
+                    </div>
+                )}
             </div>
         </div>
     );

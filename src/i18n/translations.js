@@ -533,6 +533,29 @@ export const STRINGS = {
         "settings.libraryPrice": "Library book price (rial)",
         "settings.libraryPriceHint":
             "Applied the first time a catalog book is added to a cart. Each product can be re-priced afterwards in Products.",
+        "settings.cardBuy": "Show price and quick cart buttons on book cards",
+        "settings.cardBuyHint":
+            "Adds a price with a tiny add-to-cart (and × remove while in cart) at the bottom of each card in the books catalog.",
+        "settings.telegram": "Telegram (tdlib)",
+        "settings.telegramHint":
+            "Connection credentials of the shared tdlib session (Bot Manager, book upload and messenger). Connection changes restart the Telegram client.",
+        "settings.telegramAccount": "Telegram account",
+        "settings.telegramLoginHint":
+            "Sign in with the account's phone number; Telegram sends a verification code (and, when enabled, asks for the 2FA password). The bot, messenger and book upload all share this session.",
+        "settings.telegramPhone": "Phone number",
+        "settings.telegramStart": "Start login",
+        "settings.telegramWaitingPhone": "Waiting for the phone number…",
+        "settings.telegramEnterCode": "Verification code",
+        "settings.telegramEnterPassword": "2FA password",
+        "settings.telegramSubmit": "Submit",
+        "settings.telegramCancelLogin": "Cancel login",
+        "settings.telegramLoggedIn": "Telegram account is logged in.",
+        "settings.telegramLogout": "Log out of Telegram",
+        "settings.telegramLogoutConfirm":
+            "Log out of this Telegram account? The bot, messenger and book upload stop working until you log in again.",
+        "settings.telegramSavedRestart": "Saved. The Telegram client restarted for the new connection settings.",
+        "settings.telegramDisabledHint":
+            "Telegram is disabled — enable it via Bot Manager (connection) to use the login.",
         "settings.english": "English",
         "settings.persian": "Persian (فارسی)",
         "settings.siteName": "Site name (English)",
@@ -1300,6 +1323,29 @@ export const STRINGS = {
         "settings.libraryPrice": "قیمت کتاب‌های کتابخانه (ریال)",
         "settings.libraryPriceHint":
             "این قیمت هنگام نخستین افزودن یک کتاب کتابخانه به سبد خرید اعمال می‌شود؛ پس از آن می‌توانید قیمت هر کالا را در صفحه محصولات تنظیم کنید.",
+        "settings.cardBuy": "نمایش قیمت و دکمه سبد سریع روی کارت کتاب‌ها",
+        "settings.cardBuyHint":
+            "زیر هر کارت در فهرست کتاب‌ها قیمت با دکمه کوچک افزودن به سبد (و × برای حذف در زمان حضور در سبد) اضافه می‌شود.",
+        "settings.telegram": "تلگرام (tdlib)",
+        "settings.telegramHint":
+            "اطلاعات اتصال نشست مشترک tdlib (مدیر ربات، آپلود کتاب و پیام‌رسان). تغییر اتصال، کلاینت تلگرام را ری‌استارت می‌کند.",
+        "settings.telegramAccount": "حساب تلگرام",
+        "settings.telegramLoginHint":
+            "با شماره تلفن حساب وارد شوید؛ تلگرام کد تأیید (و در صورت فعال بودن، گذرواژه دومرحله‌ای) می‌فرستد. ربات، پیام‌رسان و آپلود کتاب همه از همین نشست استفاده می‌کنند.",
+        "settings.telegramPhone": "شماره تلفن",
+        "settings.telegramStart": "شروع ورود",
+        "settings.telegramWaitingPhone": "در انتظار شماره تلفن…",
+        "settings.telegramEnterCode": "کد تأیید",
+        "settings.telegramEnterPassword": "گذرواژه دومرحله‌ای",
+        "settings.telegramSubmit": "ارسال",
+        "settings.telegramCancelLogin": "لغو ورود",
+        "settings.telegramLoggedIn": "حساب تلگرام وارد شده است.",
+        "settings.telegramLogout": "خروج از تلگرام",
+        "settings.telegramLogoutConfirm":
+            "از این حساب تلگرام خارج می‌شوید؟ ربات، پیام‌رسان و آپلود کتاب تا ورود دوباره از کار می‌افتند.",
+        "settings.telegramSavedRestart": "ذخیره شد. کلاینت تلگرام برای اتصال جدید ری‌استارت شد.",
+        "settings.telegramDisabledHint":
+            "تلگرام غیرفعال است — برای استفاده از ورود، از مدیریت ربات (اتصال) فعالش کنید.",
         "settings.english": "انگلیسی (English)",
         "settings.persian": "فارسی",
         "settings.siteName": "نام سایت (انگلیسی)",

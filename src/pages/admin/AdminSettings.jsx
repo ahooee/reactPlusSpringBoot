@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import AdminLayout from "../../components/AdminLayout";
 import { API_URL, authHeaders, apiFetch, imageSrc } from "../../lib/api";
 import { useTheme, THEMES } from "../../context/ThemeContext";
@@ -9,6 +9,14 @@ export default function AdminSettings() {
     const [values, setValues] = useState({});
     const [countries, setCountries] = useState([]);
     const [uploadingLogo, setUploadingLogo] = useState(false);
+
+    // Telegram (tdlib) — connection + account login wizard
+    const [bot, setBot] = useState({});
+    const [botStatus, setBotStatus] = useState(null);
+    const [botNotice, setBotNotice] = useState("");
+    const [botBusy, setBotBusy] = useState(false);
+    const [login, setLogin] = useState({ phone: "", code: "", password: "" });
+
     const { setThemeId, setMode, setSettings } = useTheme();
     const { t, lang } = useLanguage();
     usePageTitle(t("settings.title"));
@@ -20,6 +28,23 @@ export default function AdminSettings() {
             .catch(() => {});
     }, []);
 
+    // Telegram section lives on its own API; poll the login state so the
+    // wizard follows TDLib's current step (phone → code → 2FA → ready).
+    const loadBot = useCallback(() => {
+        apiFetch("/api/admin/bot/settings").then(data => setBot(data || {})).catch(() => {});
+        apiFetch("/api/admin/bot/login/status").then(data => setBotStatus(data || null)).catch(() => {});
+    }, []);
+
+    useEffect(() => {
+        loadBot();
+        const id = setInterval(() => {
+            apiFetch("/api/admin/bot/login/status")
+                .then(data => setBotStatus(data || null))
+                .catch(() => {});
+        }, 3000);
+        return () => clearInterval(id);
+    }, [loadBot]);
+
     async function save(e) {
         e.preventDefault();
         const saved = await apiFetch("/api/settings", { method: "PUT", body: JSON.stringify(values) });
@@ -28,6 +53,46 @@ export default function AdminSettings() {
         if (saved.theme) setThemeId(saved.theme);
         if (saved.colorScheme) setMode(saved.colorScheme);
         alert(t("settings.saved"));
+    }
+
+    async function saveBotConnection() {
+        setBotBusy(true);
+        setBotNotice("");
+        try {
+            const res = await apiFetch("/api/admin/bot/settings", {
+                method: "PUT",
+                body: JSON.stringify({
+                    apiId: bot.apiId ?? "",
+                    apiHash: bot.apiHash ?? "",
+                    databaseDirectory: bot.databaseDirectory ?? "",
+                }),
+            });
+            setBot(res.settings || {});
+            setBotStatus(await apiFetch("/api/admin/bot/login/status").catch(() => null));
+            setBotNotice(res.restarted ? t("settings.telegramSavedRestart") : t("bot.savedLive"));
+        } catch (err) {
+            setBotNotice(err.message);
+        } finally {
+            setBotBusy(false);
+        }
+    }
+
+    async function loginAction(path, payload) {
+        setBotBusy(true);
+        setBotNotice("");
+        try {
+            const status = await apiFetch(`/api/admin/bot/${path}`, {
+                method: "POST",
+                body: JSON.stringify(payload),
+            });
+            setBotStatus(status);
+            if (status.loggedIn) setLogin({ phone: "", code: "", password: "" });
+        } catch (err) {
+            setBotNotice(err.message);
+            apiFetch("/api/admin/bot/login/status").then(setBotStatus).catch(() => {});
+        } finally {
+            setBotBusy(false);
+        }
     }
 
     async function handleLogoUpload(e) {
@@ -56,6 +121,10 @@ export default function AdminSettings() {
     }
 
     const logoPreview = values.siteLogoUrl ? imageSrc(values.siteLogoUrl) : "";
+
+    const phase = botStatus?.phase || "IDLE";
+    const loggedIn = !!botStatus?.loggedIn;
+    const wizardPending = !loggedIn && phase !== "IDLE";
 
     return (
         <AdminLayout>
@@ -151,6 +220,15 @@ export default function AdminSettings() {
                     />
                 </label>
                 <p className="muted" style={{ margin: 0 }}>{t("settings.libraryPriceHint")}</p>
+                <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <input
+                        type="checkbox"
+                        checked={(values["library.cardBuyButtons"] ?? "true") !== "false"}
+                        onChange={e => setValues({ ...values, "library.cardBuyButtons": e.target.checked ? "true" : "false" })}
+                    />
+                    {t("settings.cardBuy")}
+                </label>
+                <p className="muted" style={{ margin: 0 }}>{t("settings.cardBuyHint")}</p>
 
                 <h3 style={{ margin: "16px 0 0" }}>{t("settings.registration")}</h3>
                 <p className="muted" style={{ margin: 0 }}>{t("settings.regHint")}</p>
@@ -186,6 +264,134 @@ export default function AdminSettings() {
                 <p className="muted" style={{ margin: 0 }}>{t("settings.smtpHint")}</p>
                 <div><button className="btn" type="submit">{t("settings.save")}</button></div>
             </form>
+
+            {/* ── Telegram (tdlib): connection + account login/logout ── */}
+            <div className="form" style={{ marginTop: 32 }}>
+                <h3 style={{ margin: "8px 0 0" }}>{t("settings.telegram")}</h3>
+                <p className="muted" style={{ margin: 0 }}>{t("settings.telegramHint")}</p>
+                <div style={{ display: "flex", gap: 16, flexWrap: "wrap", alignItems: "center", marginTop: 10 }}>
+                    <span>● {botStatus?.running ? t("bot.running") : t("bot.stopped")}</span>
+                    <span>{t("bot.loggedIn")}: {loggedIn ? t("bot.yes") : t("bot.no")}</span>
+                </div>
+                <div className="form-row">
+                    <label>{t("bot.apiId")}
+                        <input value={bot.apiId ?? ""} onChange={e => setBot({ ...bot, apiId: e.target.value })} dir="ltr" />
+                    </label>
+                    <label>{t("bot.apiHash")}
+                        <input value={bot.apiHash ?? ""} onChange={e => setBot({ ...bot, apiHash: e.target.value })} dir="ltr" />
+                    </label>
+                </div>
+                <label>{t("bot.dbDir")}
+                    <input value={bot.databaseDirectory ?? ""} onChange={e => setBot({ ...bot, databaseDirectory: e.target.value })} placeholder={t("bot.dbDirPh")} dir="ltr" />
+                </label>
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                    <button type="button" className="small-btn" onClick={saveBotConnection} disabled={botBusy}>
+                        {t("bot.saveAll")}
+                    </button>
+                </div>
+
+                <h3 style={{ margin: "24px 0 0" }}>{t("settings.telegramAccount")}</h3>
+                <p className="muted" style={{ margin: 0 }}>{t("settings.telegramLoginHint")}</p>
+                {!loggedIn && (
+                    <label>{t("settings.telegramPhone")}
+                        <div style={{ display: "flex", gap: 8 }}>
+                            <input
+                                value={login.phone}
+                                onChange={e => setLogin({ ...login, phone: e.target.value })}
+                                placeholder="+98912…"
+                                dir="ltr"
+                            />
+                            <button
+                                type="button"
+                                className="small-btn"
+                                disabled={botBusy || wizardPending}
+                                onClick={() => loginAction("login/start", { phone: login.phone })}
+                            >
+                                {t("settings.telegramStart")}
+                            </button>
+                        </div>
+                    </label>
+                )}
+                {phase === "NEEDS_PHONE" && !loggedIn && (
+                    <p className="muted" style={{ margin: 0 }}>{t("settings.telegramWaitingPhone")}</p>
+                )}
+                {phase === "NEEDS_CODE" && (
+                    <label>{t("settings.telegramEnterCode")}
+                        <div style={{ display: "flex", gap: 8 }}>
+                            <input
+                                value={login.code}
+                                onChange={e => setLogin({ ...login, code: e.target.value })}
+                                onKeyDown={e => { if (e.key === "Enter" && login.code.trim()) loginAction("login/code", { code: login.code }); }}
+                                placeholder="12345"
+                                dir="ltr"
+                                autoComplete="one-time-code"
+                            />
+                            <button
+                                type="button"
+                                className="small-btn"
+                                disabled={botBusy || !login.code.trim()}
+                                onClick={() => loginAction("login/code", { code: login.code })}
+                            >
+                                {t("settings.telegramSubmit")}
+                            </button>
+                        </div>
+                    </label>
+                )}
+                {phase === "NEEDS_PASSWORD" && (
+                    <label>{t("settings.telegramEnterPassword")}
+                        <div style={{ display: "flex", gap: 8 }}>
+                            <input
+                                type="password"
+                                value={login.password}
+                                onChange={e => setLogin({ ...login, password: e.target.value })}
+                                onKeyDown={e => { if (e.key === "Enter" && login.password.trim()) loginAction("login/password", { password: login.password }); }}
+                                dir="ltr"
+                                autoComplete="current-password"
+                            />
+                            <button
+                                type="button"
+                                className="small-btn"
+                                disabled={botBusy || !login.password.trim()}
+                                onClick={() => loginAction("login/password", { password: login.password })}
+                            >
+                                {t("settings.telegramSubmit")}
+                            </button>
+                        </div>
+                    </label>
+                )}
+                {loggedIn && (
+                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                        <span className="muted">{t("settings.telegramLoggedIn")}</span>
+                        <button
+                            type="button"
+                            className="small-btn danger"
+                            disabled={botBusy}
+                            onClick={() => {
+                                if (window.confirm(t("settings.telegramLogoutConfirm"))) {
+                                    loginAction("logout", null);
+                                }
+                            }}
+                        >
+                            {t("settings.telegramLogout")}
+                        </button>
+                    </div>
+                )}
+                {wizardPending && (
+                    <button
+                        type="button"
+                        className="small-btn"
+                        disabled={botBusy}
+                        onClick={() => loginAction("login/cancel", null)}
+                    >
+                        {t("settings.telegramCancelLogin")}
+                    </button>
+                )}
+                {!botStatus?.running && botStatus?.enabled === false && (
+                    <p className="muted" style={{ margin: 0 }}>{t("settings.telegramDisabledHint")}</p>
+                )}
+                {botStatus?.error && <p style={{ color: "#d33", margin: 0 }}>{botStatus.error}</p>}
+                {botNotice && <p className="muted" style={{ margin: 0 }}>{botNotice}</p>}
+            </div>
         </AdminLayout>
     );
 }
