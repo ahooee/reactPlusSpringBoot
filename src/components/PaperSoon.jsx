@@ -8,9 +8,11 @@ export function showPaperSoon() {
 }
 
 /**
- * Global "coming soon" overlay for paper-book links: dims the page and runs
- * a 3-second circular countdown, then closes — no navigation happens.
- * Mounted once in App.jsx.
+ * Global "coming soon" overlay for paper-book links. Mounted once in
+ * App.jsx. Any click anywhere on the site on a link whose path is
+ * {@code /books/paper-books} is intercepted (capture phase, primary
+ * unmodified clicks only) — the page dims, a 3-second circular countdown
+ * runs, then the overlay closes and the user stays put.
  */
 export default function PaperSoon() {
     const [open, setOpen] = useState(false);
@@ -19,7 +21,32 @@ export default function PaperSoon() {
     useEffect(() => {
         const onShow = () => setOpen(true);
         window.addEventListener("paper-books-soon", onShow);
-        return () => window.removeEventListener("paper-books-soon", onShow);
+
+        // One net for the whole site: navbar menus, breadcrumbs, generated
+        // content… anything linking /books/paper-books shows the overlay
+        // instead of navigating (ctrl/middle clicks keep normal behavior).
+        const onClickCapture = e => {
+            if (e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+            const link = e.target?.closest?.('a[href]') || null;
+            if (!link) return;
+            let path;
+            try {
+                path = new URL(link.getAttribute("href"), window.location.origin).pathname;
+            } catch {
+                return;
+            }
+            if (path === "/books/paper-books") {
+                e.preventDefault();
+                e.stopPropagation();
+                onShow();
+            }
+        };
+        document.addEventListener("click", onClickCapture, true);
+
+        return () => {
+            window.removeEventListener("paper-books-soon", onShow);
+            document.removeEventListener("click", onClickCapture, true);
+        };
     }, []);
 
     useEffect(() => {
