@@ -48,9 +48,14 @@ export default function Books({ kind: kindProp }) {
     const activeCat = searchParams.get("category") || "all";
     const activeLang = searchParams.get("language") || "all";
 
-    // Languages are stored messy in the table ("english"/"English", etc.) —
-    // comparisons are normalized the same way the /languages API groups them.
+    // Languages are stored messy in the table ("english"/"English", blanks,
+    // ISO "zxx"=no linguistics). These normalizers mirror the grouping the
+    // /languages API applies, so chip counts match the filtered grid.
     const normLang = v => (v || "").trim().toLowerCase();
+    const langKeyOf = b => {
+        const key = normLang(b.language);
+        return !key || key === "zxx" ? "unknown" : key;
+    };
     // There is no "All books" kind anymore: e-books are auto-selected as the
     // current kind (also for kindProp="all") until real paper books exist.
     const title = kind === "paper"
@@ -106,7 +111,7 @@ export default function Books({ kind: kindProp }) {
                 .toLowerCase();
             if (!haystack.includes(needle)) return false;
         }
-        if (activeLang !== "all" && normLang(b.language) !== normLang(activeLang)) {
+        if (activeLang !== "all" && langKeyOf(b) !== normLang(activeLang)) {
             return false;
         }
         if (activeCat === "all") return true;
