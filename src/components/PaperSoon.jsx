@@ -35,7 +35,7 @@ export default function PaperSoon() {
             } catch {
                 return;
             }
-            if (path === "/books/paper-books") {
+            if (path === "/books/paper-books" || path === "/books/paper-books/") {
                 e.preventDefault();
                 e.stopPropagation();
                 onShow();
