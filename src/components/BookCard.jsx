@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { imageSrc } from "../lib/api";
+import { useLanguage } from "../context/LanguageContext";
 import "./ProductCard.css";
 import "./BookCard.css";
 
 /** Catalog card for a row from the books table (no cart: these are library books). */
 export default function BookCard({ book, grid = false }) {
     const [broken, setBroken] = useState(false);
+    const { lang } = useLanguage();
     const to = `/books/${encodeURIComponent(book.id)}`;
     const cover = book.coverUrl ? imageSrc(book.coverUrl) : "";
     const format = (book.format || "ebook").toUpperCase();
@@ -33,7 +35,7 @@ export default function BookCard({ book, grid = false }) {
                         to={`/books?category=${encodeURIComponent(book.categorySlug)}`}
                         className="amz-cat book-category"
                     >
-                        {book.category}
+                        {lang === "fa" && book.categoryNameFa ? book.categoryNameFa : book.category}
                     </Link>
                 )}
                 <span className="amz-type book-format">{format}</span>

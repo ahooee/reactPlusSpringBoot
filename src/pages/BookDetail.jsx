@@ -124,7 +124,9 @@ export default function BookDetail() {
                         book?.categorySlug
                             ? {
                                 to: `/books?category=${book.categorySlug}`,
-                                label: book.category || book.categories,
+                                label: lang === "fa" && book.categoryNameFa
+                                    ? book.categoryNameFa
+                                    : (book.category || book.categories),
                             }
                             : null,
                         { label: book?.title || t("books.book") },
@@ -182,7 +184,9 @@ export default function BookDetail() {
                                             <span className="muted lbl">{t("books.category")}:</span>
                                             <span className="credit-name">
                                                 <Link to={`/books?category=${book.categorySlug}`}>
-                                                    {book.category || book.categories}
+                                                    {lang === "fa" && book.categoryNameFa
+                                                        ? book.categoryNameFa
+                                                        : (book.category || book.categories)}
                                                 </Link>
                                             </span>
                                         </div>

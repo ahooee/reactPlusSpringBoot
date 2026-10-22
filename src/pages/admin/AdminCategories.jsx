@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import AdminLayout from "../../components/AdminLayout";
 import { API_URL, authHeaders, apiFetch, imageSrc } from "../../lib/api";
 import { useLanguage } from "../../context/LanguageContext";
@@ -14,9 +15,28 @@ export default function AdminCategories() {
     const [selectedId, setSelectedId] = useState(null);
     const [attachId, setAttachId] = useState("");
     const [uploading, setUploading] = useState(false);
+
+    // Library book taxonomy: translations + per-book fixes
+    const [bookCats, setBookCats] = useState([]);
+    const [catEdits, setCatEdits] = useState({});
+    const [bookQuery, setBookQuery] = useState("");
+    const [onlyUncat, setOnlyUncat] = useState(true);
+    const [bookRows, setBookRows] = useState([]);
+    const [bookEdits, setBookEdits] = useState({});
+
     const { t, lang } = useLanguage();
     usePageTitle(t("category.title"));
     const labelOf = (en, fa) => (lang === "fa" && fa ? fa : en);
+
+    const bookInputStyle = {
+        width: "100%",
+        padding: "6px 10px",
+        borderRadius: 7,
+        border: "1px solid var(--border)",
+        background: "var(--bg)",
+        color: "var(--text-h)",
+        fontSize: 14,
+    };
 
     function load() {
         apiFetch("/api/categories").then(data => {
@@ -29,7 +49,67 @@ export default function AdminCategories() {
             .catch(() => {});
     }
 
+    // ── Library book taxonomy (dynamic per books-categories) ──
+    function loadBookCats() {
+        apiFetch("/api/admin/books/categories").then(data => {
+            setBookCats(Array.isArray(data) ? data : []);
+            setCatEdits({});
+        }).catch(() => {});
+    }
+
+    function loadBookRows() {
+        const params = new URLSearchParams();
+        if (bookQuery.trim()) params.set("query", bookQuery.trim());
+        if (onlyUncat) params.set("uncategorized", "true");
+        apiFetch(`/api/admin/books?${params.toString()}`).then(data => {
+            setBookRows(Array.isArray(data) ? data : []);
+            setBookEdits({});
+        }).catch(() => {});
+    }
+
+    async function saveCategoryName(slug) {
+        try {
+            const list = await apiFetch(`/api/admin/books/categories/${encodeURIComponent(slug)}`, {
+                method: "PUT",
+                body: JSON.stringify({ nameFa: catEdits[slug] ?? "" }),
+            });
+            setBookCats(Array.isArray(list) ? list : []);
+            setCatEdits({});
+            alert(t("bookCat.saved"));
+        } catch (err) {
+            alert(err.message);
+        }
+    }
+
+    async function removeCategoryName(slug) {
+        try {
+            await apiFetch(`/api/admin/books/categories/${encodeURIComponent(slug)}`, { method: "DELETE" });
+            setBookCats(cats => cats.map(c => (c.slug === slug ? { ...c, nameFa: null } : c)));
+        } catch (err) {
+            alert(err.message);
+        }
+    }
+
+    async function saveBookCategory(book) {
+        try {
+            await apiFetch(`/api/admin/books/${book.id}/category`, {
+                method: "PUT",
+                body: JSON.stringify({ categories: bookEdits[book.id] ?? "" }),
+            });
+            alert(t("bookCat.saved"));
+            loadBookRows();
+            loadBookCats();
+        } catch (err) {
+            alert(err.message);
+        }
+    }
+
     useEffect(load, []);
+    useEffect(() => {
+        loadBookCats();
+        loadBookRows();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     async function handleSubmit(e) {
         e.preventDefault();
@@ -207,6 +287,113 @@ export default function AdminCategories() {
                     </div>
                 </div>
             )}
+
+            {/* ── Library book categories (dynamic translations) ── */}
+            <h3 style={{ marginTop: 36 }}>{t("bookCat.title")}</h3>
+            <p className="muted" style={{ margin: 0 }}>{t("bookCat.hint")}</p>
+            <table className="admin-table" style={{ marginTop: 14 }}>
+                <thead>
+                    <tr>
+                        <th>{t("bookCat.colName")}</th>
+                        <th>{t("bookCat.colFa")}</th>
+                        <th>{t("bookCat.colBooks")}</th>
+                        <th>{t("common.actions")}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {bookCats.map(c => (
+                        <tr key={c.slug}>
+                            <td dir="ltr">{c.name}</td>
+                            <td>
+                                <input
+                                    dir="rtl"
+                                    value={catEdits[c.slug] ?? c.nameFa ?? ""}
+                                    onChange={e => setCatEdits(v => ({ ...v, [c.slug]: e.target.value }))}
+                                    placeholder={t("bookCat.colFa")}
+                                    style={bookInputStyle}
+                                    maxLength={120}
+                                />
+                            </td>
+                            <td>{c.count}</td>
+                            <td>
+                                <div className="admin-actions">
+                                    <button className="small-btn" onClick={() => saveCategoryName(c.slug)}>
+                                        {t("category.save")}
+                                    </button>
+                                    <button
+                                        className="small-btn danger"
+                                        onClick={() => removeCategoryName(c.slug)}
+                                        disabled={!c.nameFa}
+                                    >
+                                        {t("common.delete")}
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+            {bookCats.length === 0 && <p className="muted">{t("bookCat.empty")}</p>}
+
+            {/* ── Taxonomy fixer (null / wrong categories) ── */}
+            <h3 style={{ marginTop: 36 }}>{t("bookCat.fixTitle")}</h3>
+            <p className="muted" style={{ margin: 0 }}>{t("bookCat.fixHint")}</p>
+            <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap", alignItems: "center" }}>
+                <label className="small-btn" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                    <input type="checkbox" checked={onlyUncat} onChange={e => setOnlyUncat(e.target.checked)} />
+                    {t("bookCat.onlyUncategorized")}
+                </label>
+                <input
+                    value={bookQuery}
+                    onChange={e => setBookQuery(e.target.value)}
+                    onKeyDown={e => { if (e.key === "Enter") loadBookRows(); }}
+                    placeholder={t("books.search")}
+                    dir="ltr"
+                    style={{ ...bookInputStyle, flex: 1, minWidth: 180 }}
+                />
+                <button className="small-btn" onClick={loadBookRows}>{t("common.search")}</button>
+            </div>
+            <table className="admin-table" style={{ marginTop: 12 }}>
+                <thead>
+                    <tr>
+                        <th style={{ width: "45%" }}>{t("books.book")}</th>
+                        <th>{t("bookCat.rawCategories")}</th>
+                        <th>{t("common.actions")}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {bookRows.map(b => (
+                        <tr key={b.id}>
+                            <td>
+                                <Link
+                                    to={`/books/${b.id}`}
+                                    style={{ color: "var(--accent)", textDecoration: "none" }}
+                                >
+                                    {b.title}
+                                </Link>
+                                <div className="muted" dir="ltr" style={{ fontSize: 12 }}>
+                                    {[b.language, b.format && b.format.toUpperCase()].filter(Boolean).join(" · ")}
+                                </div>
+                            </td>
+                            <td>
+                                <input
+                                    dir="ltr"
+                                    value={bookEdits[b.id] ?? b.categories ?? ""}
+                                    onChange={e => setBookEdits(v => ({ ...v, [b.id]: e.target.value }))}
+                                    placeholder='Fiction - Classics'
+                                    style={bookInputStyle}
+                                />
+                            </td>
+                            <td>
+                                <button className="small-btn" onClick={() => saveBookCategory(b)}>
+                                    {t("category.save")}
+                                </button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+            {bookRows.length === 0 && <p className="muted">{t("bookCat.noMatches")}</p>}
         </AdminLayout>
     );
 }

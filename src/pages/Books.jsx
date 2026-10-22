@@ -35,12 +35,11 @@ export default function Books({ kind: kindProp }) {
     const [books, setBooks] = useState([]);
     const [categories, setCategories] = useState([]);
     const [state, setState] = useState("loading");
-    const { t } = useLanguage();
+    const { t, lang } = useLanguage();
     const [searchParams, setSearchParams] = useSearchParams();
     const qParam = searchParams.get("q") || "";
     const [query, setQuery] = useState(qParam);
     const activeCat = searchParams.get("category") || "all";
-
     const title = kind === "ebook"
         ? t("books.titleEbooks")
         : kind === "paper"
@@ -95,6 +94,7 @@ export default function Books({ kind: kindProp }) {
         else setSearchParams({ category: slug });
     }
 
+    const catName = c => (lang === "fa" && c.nameFa ? c.nameFa : c.name);
     const kindPath = kind === "ebook" ? "/books/ebooks" : kind === "paper" ? "/books/paper-books" : "/books";
     const activeCatObj =
         activeCat !== "all" && activeCat !== "none"
@@ -107,7 +107,7 @@ export default function Books({ kind: kindProp }) {
         { to: "/", label: t("nav.home") },
         { to: "/books", label: t("books.titleAll") },
         ...(kind !== "all" ? [{ to: kindPath, label: title }] : []),
-        ...(activeCatObj ? [{ label: activeCatObj.name }] : []),
+        ...(activeCatObj ? [{ label: catName(activeCatObj) }] : []),
     ];
     crumbs = crumbs.map((c, i) => (i === crumbs.length - 1 ? { label: c.label } : c));
 
@@ -158,7 +158,7 @@ export default function Books({ kind: kindProp }) {
                                     className={`cat-chip${activeCat === c.slug ? " on" : ""}`}
                                     onClick={() => pickCategory(c.slug)}
                                 >
-                                    {c.name}
+                                    {catName(c)}
                                 </button>
                             ))}
                             {hasUncategorized && (
