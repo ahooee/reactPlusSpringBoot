@@ -548,9 +548,22 @@ export const STRINGS = {
         "settings.cardBuy": "Show price and quick cart buttons on book cards",
         "settings.cardBuyHint":
             "Adds a price with a tiny add-to-cart (and × remove while in cart) at the bottom of each card in the books catalog.",
-        "settings.featuredIds": "Featured books (IDs)",
-        "settings.featuredIdsHint":
-            "Comma-separated book IDs pinned to the Featured reel on the books page. Empty = automatic daily rotation.",
+        "settings.featuredMoved": "The Featured reel is curated in:",
+        "admin.featured": "Featured books",
+        "feat.hint":
+            "Pick the books pinned to the “Featured” reel on the books page (max 12). An empty list rotates daily. Changes save automatically.",
+        "feat.selected": "Featured order",
+        "feat.empty": "Nothing curated yet — the reel rotates through the catalog daily.",
+        "feat.catalog": "Catalog",
+        "feat.search": "Filter by title, author, category, language…",
+        "feat.add": "Add",
+        "feat.added": "Added",
+        "feat.remove": "Remove",
+        "feat.up": "Move up",
+        "feat.down": "Move down",
+        "feat.saving": "Saving…",
+        "feat.saved": "Saved",
+        "feat.cap": "The reel shows the first 12 only — remove one to add another.",
         "settings.telegram": "Telegram (tdlib)",
         "settings.telegramHint":
             "Connection credentials of the shared tdlib session (Bot Manager, book upload and messenger). Connection changes restart the Telegram client.",
@@ -1353,9 +1366,22 @@ export const STRINGS = {
         "settings.cardBuy": "نمایش قیمت و دکمه سبد سریع روی کارت کتاب‌ها",
         "settings.cardBuyHint":
             "زیر هر کارت در فهرست کتاب‌ها قیمت با دکمه کوچک افزودن به سبد (و × برای حذف در زمان حضور در سبد) اضافه می‌شود.",
-        "settings.featuredIds": "کتاب‌های ویژه (شناسه‌ها)",
-        "settings.featuredIdsHint":
-            "شناسه کتاب‌ها با کاما جدا شود تا در ردیف «پیشنهاد ویژه» صفحه کتاب‌ها سنجاق شوند. خالی = چرخش روزانه خودکار.",
+        "settings.featuredMoved": "ردیف ویژه از این بخش مدیریت می‌شود:",
+        "admin.featured": "کتاب‌های ویژه",
+        "feat.hint":
+            "کتاب‌های سنجاق‌شده در ردیف «پیشنهاد ویژه» صفحه کتاب‌ها (حداکثر ۱۲) را انتخاب کنید. فهرست خالی یعنی چرخش روزانه. تغییرات خودکار ذخیره می‌شود.",
+        "feat.selected": "ترتیب ردیف ویژه",
+        "feat.empty": "هنوز چیزی سنجاق نشده — ردیف به‌صورت روزانه از میان کتاب‌ها می‌چرخد.",
+        "feat.catalog": "فهرست کتاب‌ها",
+        "feat.search": "فیلتر عنوان، نویسنده، دسته، زبان…",
+        "feat.add": "افزودن",
+        "feat.added": "افزوده شد",
+        "feat.remove": "حذف",
+        "feat.up": "بالا",
+        "feat.down": "پایین",
+        "feat.saving": "در حال ذخیره…",
+        "feat.saved": "ذخیره شد",
+        "feat.cap": "ردیف فقط ۱۲ کتاب اول را نشان می‌دهد — برای افزودن جایگزین یکی را حذف کنید.",
         "settings.telegram": "تلگرام (tdlib)",
         "settings.telegramHint":
             "اطلاعات اتصال نشست مشترک tdlib (مدیر ربات، آپلود کتاب و پیام‌رسان). تغییر اتصال، کلاینت تلگرام را ری‌استارت می‌کند.",

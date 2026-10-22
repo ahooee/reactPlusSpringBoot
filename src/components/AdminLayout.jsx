@@ -12,6 +12,7 @@ export default function AdminLayout({ children }) {
                     <Link to="/admin/posts">{t("admin.posts")}</Link>
                     <Link to="/admin/products">{t("admin.products")}</Link>
                     <Link to="/admin/categories">{t("admin.categories")}</Link>
+                    <Link to="/admin/featured">{t("admin.featured")}</Link>
                     <Link to="/admin/rail">{t("admin.rail")}</Link>
                     <Link to="/admin/post-rail">{t("admin.postRail")}</Link>
                     <Link to="/admin/pages">{t("admin.pages")}</Link>

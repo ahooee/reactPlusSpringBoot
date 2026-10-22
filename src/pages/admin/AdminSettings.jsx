@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import AdminLayout from "../../components/AdminLayout";
 import { API_URL, authHeaders, apiFetch, imageSrc } from "../../lib/api";
 import { useTheme, THEMES } from "../../context/ThemeContext";
@@ -229,15 +230,10 @@ export default function AdminSettings() {
                     {t("settings.cardBuy")}
                 </label>
                 <p className="muted" style={{ margin: 0 }}>{t("settings.cardBuyHint")}</p>
-                <label>{t("settings.featuredIds")}
-                    <input
-                        value={values["books.featuredIds"] || ""}
-                        onChange={e => setValues({ ...values, "books.featuredIds": e.target.value })}
-                        placeholder="0d07174f-448a-4c83-8207-cb0c1d77e6ee, …"
-                        dir="ltr"
-                    />
-                </label>
-                <p className="muted" style={{ margin: 0 }}>{t("settings.featuredIdsHint")}</p>
+                <p className="muted" style={{ margin: 0 }}>
+                    {t("settings.featuredMoved")}{" "}
+                    <Link to="/admin/featured">{t("admin.featured")}</Link>
+                </p>
 
                 <h3 style={{ margin: "16px 0 0" }}>{t("settings.registration")}</h3>
                 <p className="muted" style={{ margin: 0 }}>{t("settings.regHint")}</p>

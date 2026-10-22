@@ -18,6 +18,7 @@ import Dashboard from "./pages/admin/Dashboard";
 import AdminPosts from "./pages/admin/AdminPosts";
 import AdminProducts from "./pages/admin/AdminProducts";
 import AdminCategories from "./pages/admin/AdminCategories";
+import AdminFeatured from "./pages/admin/AdminFeatured";
 import AdminPages from "./pages/admin/AdminPages";
 import AdminMenus from "./pages/admin/AdminMenus";
 import AdminMedia from "./pages/admin/AdminMedia";
@@ -74,6 +75,7 @@ function App() {
                 <Route path="/admin/posts" element={<Admin><AdminPosts /></Admin>} />
                 <Route path="/admin/products" element={<Admin><AdminProducts /></Admin>} />
                 <Route path="/admin/categories" element={<Admin><AdminCategories /></Admin>} />
+                <Route path="/admin/featured" element={<Admin><AdminFeatured /></Admin>} />
                 <Route path="/admin/pages" element={<Admin><AdminPages /></Admin>} />
                 <Route path="/admin/menus" element={<Admin><AdminMenus /></Admin>} />
                 <Route path="/admin/media" element={<Admin><AdminMedia /></Admin>} />
