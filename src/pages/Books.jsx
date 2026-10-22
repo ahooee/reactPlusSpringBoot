@@ -44,11 +44,11 @@ export default function Books({ kind: kindProp }) {
     const qParam = searchParams.get("q") || "";
     const [query, setQuery] = useState(qParam);
     const activeCat = searchParams.get("category") || "all";
-    const title = kind === "ebook"
-        ? t("books.titleEbooks")
-        : kind === "paper"
-            ? t("books.titlePaper")
-            : t("books.titleAll");
+    // There is no "All books" kind anymore: e-books are auto-selected as the
+    // current kind (also for kindProp="all") until real paper books exist.
+    const title = kind === "paper"
+        ? t("books.titlePaper")
+        : t("books.titleEbooks");
     usePageTitle(title);
 
     // The home page search navigates to /books?q=...; the initial state above
@@ -107,18 +107,17 @@ export default function Books({ kind: kindProp }) {
     }
 
     const catName = c => (lang === "fa" && c.nameFa ? c.nameFa : c.name);
-    const kindPath = kind === "ebook" ? "/books/ebooks" : kind === "paper" ? "/books/paper-books" : "/books";
     const activeCatObj =
         activeCat !== "all" && activeCat !== "none"
             ? categories.find(c => c.slug === activeCat) || null
             : null;
 
-    // Trail mirrors the drill-down: Home → Books → (E-books →) Category.
-    // The last crumb is the current page, so it renders without a link.
+    // Trail mirrors the drill-down: Home → Books → Kind (e-books, or paper
+    // on that direct visit) → Category. The last crumb renders without a link.
     let crumbs = [
         { to: "/", label: t("nav.home") },
         { to: "/books", label: t("books.titleAll") },
-        ...(kind !== "all" ? [{ to: kindPath, label: title }] : []),
+        { to: kind === "paper" ? "/books/paper-books" : "/books/ebooks", label: title },
         ...(activeCatObj ? [{ label: catName(activeCatObj) }] : []),
     ];
     crumbs = crumbs.map((c, i) => (i === crumbs.length - 1 ? { label: c.label } : c));
@@ -161,14 +160,10 @@ export default function Books({ kind: kindProp }) {
                     <aside className="bk-side">
                         <div className="bk-side-head">{t("books.categories")}</div>
                         <nav className="bk-side-list">
+                            {/* e-books is the selection by default (kind "all"
+                                aliases it) until books become available */}
                             <Link
-                                className={`bk-side-item${kind === "all" ? " on" : ""}`}
-                                to="/books"
-                            >
-                                <span>📚 {t("books.titleAll")}</span>
-                            </Link>
-                            <Link
-                                className={`bk-side-item${kind === "ebook" ? " on" : ""}`}
+                                className={`bk-side-item${kind !== "paper" ? " on" : ""}`}
                                 to="/books/ebooks"
                             >
                                 <span>📄 {t("books.titleEbooks")}</span>
@@ -249,10 +244,7 @@ export default function Books({ kind: kindProp }) {
 
                         {/* Kind + category chips (mobile: replaces the sidebar) */}
                         <div className="bk-mobile-cats">
-                            <Link className={`cat-chip${kind === "all" ? " on" : ""}`} to="/books">
-                                📚 {t("books.titleAll")}
-                            </Link>
-                            <Link className={`cat-chip${kind === "ebook" ? " on" : ""}`} to="/books/ebooks">
+                            <Link className={`cat-chip${kind !== "paper" ? " on" : ""}`} to="/books/ebooks">
                                 📄 {t("books.titleEbooks")}
                             </Link>
                             <Link className={`cat-chip${kind === "paper" ? " on" : ""}`} to="/books/paper-books"
