@@ -95,15 +95,21 @@ export default function Books({ kind: kindProp }) {
         else setSearchParams({ category: slug });
     }
 
-    const crumbs = [
+    const kindPath = kind === "ebook" ? "/books/ebooks" : kind === "paper" ? "/books/paper-books" : "/books";
+    const activeCatObj =
+        activeCat !== "all" && activeCat !== "none"
+            ? categories.find(c => c.slug === activeCat) || null
+            : null;
+
+    // Trail mirrors the drill-down: Home → Books → (E-books →) Category.
+    // The last crumb is the current page, so it renders without a link.
+    let crumbs = [
         { to: "/", label: t("nav.home") },
-        ...(kind === "all"
-            ? [{ label: t("books.titleAll") }]
-            : [
-                { to: "/books", label: t("books.titleAll") },
-                { label: title },
-            ]),
+        { to: "/books", label: t("books.titleAll") },
+        ...(kind !== "all" ? [{ to: kindPath, label: title }] : []),
+        ...(activeCatObj ? [{ label: activeCatObj.name }] : []),
     ];
+    crumbs = crumbs.map((c, i) => (i === crumbs.length - 1 ? { label: c.label } : c));
 
     return (
         <>

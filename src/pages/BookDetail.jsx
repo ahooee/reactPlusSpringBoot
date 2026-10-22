@@ -119,8 +119,16 @@ export default function BookDetail() {
                     items={[
                         { to: "/", label: t("nav.home") },
                         { to: "/books", label: t("books.titleAll") },
+                        // Every books-table row is an e-book.
+                        { to: "/books/ebooks", label: t("books.titleEbooks") },
+                        book?.categorySlug
+                            ? {
+                                to: `/books?category=${book.categorySlug}`,
+                                label: book.category || book.categories,
+                            }
+                            : null,
                         { label: book?.title || t("books.book") },
-                    ]}
+                    ].filter(Boolean)}
                 />
 
                 {loading && <p className="page-state">{t("shop.loading")}</p>}
