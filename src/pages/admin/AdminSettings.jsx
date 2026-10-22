@@ -229,6 +229,15 @@ export default function AdminSettings() {
                     {t("settings.cardBuy")}
                 </label>
                 <p className="muted" style={{ margin: 0 }}>{t("settings.cardBuyHint")}</p>
+                <label>{t("settings.featuredIds")}
+                    <input
+                        value={values["books.featuredIds"] || ""}
+                        onChange={e => setValues({ ...values, "books.featuredIds": e.target.value })}
+                        placeholder="0d07174f-448a-4c83-8207-cb0c1d77e6ee, …"
+                        dir="ltr"
+                    />
+                </label>
+                <p className="muted" style={{ margin: 0 }}>{t("settings.featuredIdsHint")}</p>
 
                 <h3 style={{ margin: "16px 0 0" }}>{t("settings.registration")}</h3>
                 <p className="muted" style={{ margin: 0 }}>{t("settings.regHint")}</p>

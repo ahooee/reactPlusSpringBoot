@@ -73,6 +73,15 @@ export const STRINGS = {
         "books.count": "{n} books",
         "books.search": "Search title, author, category…",
         "common.search": "Search",
+        "common.clear": "Clear",
+        "common.prev": "Previous",
+        "common.next": "Next",
+        "books.results": "Results",
+        "books.categories": "Categories",
+        "books.reelFeatured": "Featured",
+        "books.reelRecommended": "Recommended for you",
+        "books.reelTopSellers": "Best sellers",
+        "books.reelHint": "Scroll for more →",
         "books.book": "Book",
         "books.author": "Author",
         "books.category": "Category",
@@ -536,6 +545,9 @@ export const STRINGS = {
         "settings.cardBuy": "Show price and quick cart buttons on book cards",
         "settings.cardBuyHint":
             "Adds a price with a tiny add-to-cart (and × remove while in cart) at the bottom of each card in the books catalog.",
+        "settings.featuredIds": "Featured books (IDs)",
+        "settings.featuredIdsHint":
+            "Comma-separated book IDs pinned to the Featured reel on the books page. Empty = automatic daily rotation.",
         "settings.telegram": "Telegram (tdlib)",
         "settings.telegramHint":
             "Connection credentials of the shared tdlib session (Bot Manager, book upload and messenger). Connection changes restart the Telegram client.",
@@ -883,6 +895,15 @@ export const STRINGS = {
         "books.error": "بارگذاری کتاب‌ها ممکن نشد.",
         "books.notFound": "کتاب پیدا نشد.",
         "books.added": "به سبد خرید شما اضافه شد.",
+        "common.clear": "پاک کردن",
+        "common.prev": "قبلی",
+        "common.next": "بعدی",
+        "books.results": "نتایج",
+        "books.categories": "دسته‌بندی‌ها",
+        "books.reelFeatured": "پیشنهاد ویژه",
+        "books.reelRecommended": "بر اساس سلیقه شما",
+        "books.reelTopSellers": "پرفروش‌ترین‌ها",
+        "books.reelHint": "برای دیدن بیشتر بکشید ←",
         "books.buyError": "افزودن این کتاب به سبد خرید ممکن نشد.",
         "bookCat.title": "دسته‌بندی کتاب‌های کتابخانه",
         "bookCat.hint": "دسته‌های کتابخانه مستقیم از خود کتاب‌ها برداشت می‌شود، پس دسته‌های جدید خودکار همین‌جا ظاهر می‌شوند. برای هر دسته نام فارسی اضافه کنید؛ نام انگلیسی از کتابخانه می‌آید.",
@@ -1326,6 +1347,9 @@ export const STRINGS = {
         "settings.cardBuy": "نمایش قیمت و دکمه سبد سریع روی کارت کتاب‌ها",
         "settings.cardBuyHint":
             "زیر هر کارت در فهرست کتاب‌ها قیمت با دکمه کوچک افزودن به سبد (و × برای حذف در زمان حضور در سبد) اضافه می‌شود.",
+        "settings.featuredIds": "کتاب‌های ویژه (شناسه‌ها)",
+        "settings.featuredIdsHint":
+            "شناسه کتاب‌ها با کاما جدا شود تا در ردیف «پیشنهاد ویژه» صفحه کتاب‌ها سنجاق شوند. خالی = چرخش روزانه خودکار.",
         "settings.telegram": "تلگرام (tdlib)",
         "settings.telegramHint":
             "اطلاعات اتصال نشست مشترک tdlib (مدیر ربات، آپلود کتاب و پیام‌رسان). تغییر اتصال، کلاینت تلگرام را ری‌استارت می‌کند.",

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Breadcrumbs from "../components/Breadcrumbs";
@@ -8,6 +8,7 @@ import { apiFetch } from "../lib/api";
 import { useLanguage } from "../context/LanguageContext";
 import { usePageTitle } from "../lib/usePageTitle";
 import "./Shop.css";
+import "./Books.css";
 
 const KINDS = ["all", "ebook", "paper"];
 
@@ -22,8 +23,9 @@ function typeFor(kind) {
 }
 
 /**
- * Dedicated book pages backed exclusively by the `books` table.
- * Only rows with downloaded = true are returned by /api/books.
+ * Digikala-style books catalog, backed exclusively by the `books` table:
+ * a top search bar, a category sidebar, and horizontal reel strips
+ * (featured / recommended / top sellers) above the results grid.
  *
  *   /books             → all downloaded books
  *   /books/ebooks      → e-books (every row in the table is an e-book)
@@ -34,6 +36,7 @@ export default function Books({ kind: kindProp }) {
     const wantType = typeFor(kind);
     const [books, setBooks] = useState([]);
     const [categories, setCategories] = useState([]);
+    const [reels, setReels] = useState(null);
     const [state, setState] = useState("loading");
     const { t, lang } = useLanguage();
     const [searchParams, setSearchParams] = useSearchParams();
@@ -66,6 +69,11 @@ export default function Books({ kind: kindProp }) {
                 if (!cancelled) setCategories(Array.isArray(data) ? data : []);
             })
             .catch(() => {});
+        apiFetch("/api/books/reels")
+            .then(data => {
+                if (!cancelled) setReels(data || null);
+            })
+            .catch(() => {});
         return () => {
             cancelled = true;
         };
@@ -75,6 +83,7 @@ export default function Books({ kind: kindProp }) {
         wantType === "all" || (b.bookType || "PDF") === wantType
     );
     const hasUncategorized = visible.some(b => !b.categorySlug);
+    const searching = !!query.trim();
     const needle = query.trim().toLowerCase();
     const filtered = visible.filter(b => {
         if (needle) {
@@ -90,8 +99,10 @@ export default function Books({ kind: kindProp }) {
     });
 
     function pickCategory(slug) {
-        if (!slug || slug === "all") setSearchParams({});
-        else setSearchParams({ category: slug });
+        const next = {};
+        if (slug && slug !== "all") next.category = slug;
+        if (query.trim()) next.q = query.trim();
+        setSearchParams(next);
     }
 
     const catName = c => (lang === "fa" && c.nameFa ? c.nameFa : c.name);
@@ -111,41 +122,124 @@ export default function Books({ kind: kindProp }) {
     ];
     crumbs = crumbs.map((c, i) => (i === crumbs.length - 1 ? { label: c.label } : c));
 
+    const searchingMode = state === "done" && searching;
+
     return (
         <>
             <Navbar />
             <main className="amz-main">
                 <Breadcrumbs items={crumbs} />
-                <div className="amz-row-head">
-                    <h2>{title}</h2>
-                    <span className="amz-count">{t("books.count", { n: filtered.length })}</span>
+
+                {/* Top search bar (Digikala-style pill) */}
+                <div className="bk-search">
+                    <span className="bk-search-icon" aria-hidden="true">🔍</span>
+                    <input
+                        placeholder={t("books.search")}
+                        value={query}
+                        onChange={e => setQuery(e.target.value)}
+                        aria-label={t("books.search")}
+                    />
+                    {query && (
+                        <button
+                            className="bk-search-clear"
+                            onClick={() => setQuery("")}
+                            aria-label={t("common.clear")}
+                        >
+                            ×
+                        </button>
+                    )}
                 </div>
 
-                <div className="cat-chips">
-                    <Link className={`cat-chip${kind === "all" ? " on" : ""}`} to="/books">
-                        📚 {t("books.titleAll")}
-                    </Link>
-                    <Link className={`cat-chip${kind === "ebook" ? " on" : ""}`} to="/books/ebooks">
-                        📄 {t("books.titleEbooks")}
-                    </Link>
-                    <Link className={`cat-chip${kind === "paper" ? " on" : ""}`} to="/books/paper-books">
-                        📕 {t("books.titlePaper")}
-                    </Link>
-                </div>
+                <div className="bk-body">
+                    {/* Category sidebar (desktop) */}
+                    <aside className="bk-side">
+                        <div className="bk-side-head">{t("books.categories")}</div>
+                        <nav className="bk-side-list">
+                            <Link
+                                className={`bk-side-item${kind === "all" ? " on" : ""}`}
+                                to="/books"
+                            >
+                                <span>📚 {t("books.titleAll")}</span>
+                            </Link>
+                            <Link
+                                className={`bk-side-item${kind === "ebook" ? " on" : ""}`}
+                                to="/books/ebooks"
+                            >
+                                <span>📄 {t("books.titleEbooks")}</span>
+                            </Link>
+                            <Link
+                                className={`bk-side-item${kind === "paper" ? " on" : ""}`}
+                                to="/books/paper-books"
+                            >
+                                <span>📕 {t("books.titlePaper")}</span>
+                            </Link>
+                            <div className="bk-side-sep" />
+                            <button
+                                className={`bk-side-item${activeCat === "all" ? " on" : ""}`}
+                                onClick={() => pickCategory("all")}
+                            >
+                                <span>{t("shop.all")}</span>
+                                <span className="bk-side-count">{visible.length}</span>
+                            </button>
+                            {categories.map(c => (
+                                <button
+                                    key={c.slug}
+                                    className={`bk-side-item${activeCat === c.slug ? " on" : ""}`}
+                                    onClick={() => pickCategory(c.slug)}
+                                >
+                                    <span>{catName(c)}</span>
+                                    <span className="bk-side-count">{c.count}</span>
+                                </button>
+                            ))}
+                            {hasUncategorized && (
+                                <button
+                                    className={`bk-side-item${activeCat === "none" ? " on" : ""}`}
+                                    onClick={() => pickCategory("none")}
+                                >
+                                    <span>{t("shop.uncategorized")}</span>
+                                </button>
+                            )}
+                        </nav>
+                    </aside>
 
-                {state === "loading" && <p className="page-state">{t("shop.loading")}</p>}
-                {state === "error" && <p className="page-state">{t("books.error")}</p>}
+                    {/* Main column: reels + results */}
+                    <div className="bk-main">
+                        {state === "done" && !searchingMode && reels && (
+                            <>
+                                <Reel
+                                    title={t("books.reelFeatured")}
+                                    icon="🌟"
+                                    items={reels.featured}
+                                />
+                                <Reel
+                                    title={t("books.reelRecommended")}
+                                    icon="✨"
+                                    items={reels.recommended}
+                                />
+                                <Reel
+                                    title={t("books.reelTopSellers")}
+                                    icon="🔥"
+                                    items={reels.topSellers}
+                                />
+                            </>
+                        )}
 
-                {state === "done" && (
-                    <>
-                        <div className="toolbar">
-                            <input
-                                placeholder={t("books.search")}
-                                value={query}
-                                onChange={e => setQuery(e.target.value)}
-                            />
+                        <div className="amz-row-head">
+                            <h2>{searchingMode ? t("books.results") : title}</h2>
+                            <span className="amz-count">{t("books.count", { n: filtered.length })}</span>
                         </div>
-                        <div className="cat-chips">
+
+                        {/* Kind + category chips (mobile: replaces the sidebar) */}
+                        <div className="bk-mobile-cats">
+                            <Link className={`cat-chip${kind === "all" ? " on" : ""}`} to="/books">
+                                📚 {t("books.titleAll")}
+                            </Link>
+                            <Link className={`cat-chip${kind === "ebook" ? " on" : ""}`} to="/books/ebooks">
+                                📄 {t("books.titleEbooks")}
+                            </Link>
+                            <Link className={`cat-chip${kind === "paper" ? " on" : ""}`} to="/books/paper-books">
+                                📕 {t("books.titlePaper")}
+                            </Link>
                             <button
                                 className={`cat-chip${activeCat === "all" ? " on" : ""}`}
                                 onClick={() => pickCategory("all")}
@@ -170,21 +264,92 @@ export default function Books({ kind: kindProp }) {
                                 </button>
                             )}
                         </div>
-                        <div className="amz-grid">
-                            {filtered.map((b, i) => (
-                                <Reveal key={b.id} delay={(i % 4) * 50}>
-                                    <BookCard book={b} grid />
-                                </Reveal>
-                            ))}
-                        </div>
-                        {filtered.length === 0 && (
-                            <p className="muted">
-                                {wantType === "PAPER" ? t("books.emptyPaper") : t("shop.empty")}
-                            </p>
+
+                        {state === "loading" && <p className="page-state">{t("shop.loading")}</p>}
+                        {state === "error" && <p className="page-state">{t("books.error")}</p>}
+
+                        {state === "done" && (
+                            <>
+                                <div className="amz-grid">
+                                    {filtered.map((b, i) => (
+                                        <Reveal key={b.id} delay={(i % 4) * 50}>
+                                            <BookCard book={b} grid />
+                                        </Reveal>
+                                    ))}
+                                </div>
+                                {filtered.length === 0 && (
+                                    <p className="muted">
+                                        {wantType === "PAPER" ? t("books.emptyPaper") : t("shop.empty")}
+                                    </p>
+                                )}
+                            </>
                         )}
-                    </>
-                )}
+                    </div>
+                </div>
             </main>
         </>
+    );
+}
+
+/** Digikala-style horizontal reel: header + scrollable strip with arrows. */
+function Reel({ title, icon, items }) {
+    const { t, lang } = useLanguage();
+    const trackRef = useRef(null);
+    const [edge, setEdge] = useState({ start: true, end: false });
+
+    if (!items || items.length === 0) return null;
+
+    function updateEdges() {
+        const el = trackRef.current;
+        if (!el) return;
+        const max = el.scrollWidth - el.clientWidth;
+        const pos = Math.abs(el.scrollLeft);   // RTL scrollLeft goes negative
+        setEdge({ start: pos <= 1, end: pos >= max - 1 });
+    }
+
+    function slide(dir) {
+        const el = trackRef.current;
+        if (!el) return;
+        const rtl = getComputedStyle(el).direction === "rtl";
+        const w = el.clientWidth * 0.9;
+        el.scrollBy({ left: dir * (rtl ? -w : w), behavior: "smooth" });
+    }
+
+    const startGlyph = lang === "fa" ? "›" : "‹";
+    const endGlyph = lang === "fa" ? "‹" : "›";
+
+    return (
+        <section className="bk-reel">
+            <div className="bk-reel-head">
+                <h3>
+                    <span className="bk-reel-accent" aria-hidden="true" />
+                    {icon} {title}
+                </h3>
+                <span className="bk-reel-hint">{t("books.reelHint")}</span>
+            </div>
+            <div className="bk-reel-wrap">
+                <button
+                    className={`bk-arrow bk-arrow-start${edge.start ? " off" : ""}`}
+                    onClick={() => slide(-1)}
+                    aria-label={t("common.prev")}
+                >
+                    {startGlyph}
+                </button>
+                <div className="bk-reel-track" ref={trackRef} onScroll={updateEdges}>
+                    {items.map(b => (
+                        <div className="bk-reel-card" key={b.id}>
+                            <BookCard book={b} grid />
+                        </div>
+                    ))}
+                </div>
+                <button
+                    className={`bk-arrow bk-arrow-end${edge.end ? " off" : ""}`}
+                    onClick={() => slide(1)}
+                    aria-label={t("common.next")}
+                >
+                    {endGlyph}
+                </button>
+            </div>
+        </section>
     );
 }
