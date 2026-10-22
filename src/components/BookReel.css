@@ -50,6 +50,18 @@
     scroll-snap-type: x proximity;
     scrollbar-width: none;
     padding: 2px 4px 6px;
+    cursor: grab;
+    user-select: none;
+}
+
+.reel-track:active {
+    cursor: grabbing;
+}
+
+/* no native image/text drags inside the reel */
+.reel-track a,
+.reel-track img {
+    -webkit-user-drag: none;
 }
 
 .reel-track::-webkit-scrollbar {

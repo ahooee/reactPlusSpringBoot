@@ -8,10 +8,15 @@ import "./BookReel.css";
  * edge chevron arrows. Arrows use logical insets (RTL flips them) and fade
  * out at scroll limits; the reel self-hides when the item list is empty.
  * Shared by the books page and the home page.
+ *
+ * The strip is also drag-scrollable: holding the left mouse button (or pen)
+ * and moving scrubs the track — a drag never turns into a click, while
+ * real clicks on cards stay intact. Touch keeps native scrolling.
  */
 export default function BookReel({ title, icon, items }) {
     const { t, lang } = useLanguage();
     const trackRef = useRef(null);
+    const dragRef = useRef({ suppressClick: false });
     const [edge, setEdge] = useState({ start: true, end: false });
 
     function updateEdges() {
@@ -36,6 +41,50 @@ export default function BookReel({ title, icon, items }) {
         el.scrollBy({ left: dir * (rtl ? -w : w), behavior: "smooth" });
     }
 
+    function onPointerDown(e) {
+        if (e.pointerType === "touch" || e.button !== 0) return;
+        const el = trackRef.current;
+        const startX = e.clientX;
+        const scrollStart = el.scrollLeft;
+        let moved = false;
+
+        const onMove = ev => {
+            const dx = ev.clientX - startX;
+            if (!moved && Math.abs(dx) > 6) {
+                moved = true;
+                el.style.scrollSnapType = "none"; // don't fight the scrub
+            }
+            if (moved) {
+                ev.preventDefault();
+                // Direction-agnostic: dragging toward the "content side"
+                // (left in LTR, right in RTL) advances the track.
+                el.scrollLeft = scrollStart - dx;
+            }
+        };
+
+        const finish = () => {
+            dragRef.current = { suppressClick: moved };
+            document.removeEventListener("pointermove", onMove, true);
+            document.removeEventListener("pointerup", finish, true);
+            document.removeEventListener("pointercancel", finish, true);
+            el.style.scrollSnapType = "";
+        };
+
+        dragRef.current = { suppressClick: false };
+        document.addEventListener("pointermove", onMove, true);
+        document.addEventListener("pointerup", finish, true);
+        document.addEventListener("pointercancel", finish, true);
+    }
+
+    // A drag is not a click: swallow card clicks the moment a scrub happened.
+    function onClickCapture(e) {
+        if (dragRef.current.suppressClick) {
+            e.preventDefault();
+            e.stopPropagation();
+            dragRef.current.suppressClick = false;
+        }
+    }
+
     const startGlyph = lang === "fa" ? "›" : "‹";
     const endGlyph = lang === "fa" ? "‹" : "›";
 
@@ -56,7 +105,13 @@ export default function BookReel({ title, icon, items }) {
                 >
                     {startGlyph}
                 </button>
-                <div className="reel-track" ref={trackRef} onScroll={updateEdges}>
+                <div
+                    className="reel-track"
+                    ref={trackRef}
+                    onScroll={updateEdges}
+                    onPointerDown={onPointerDown}
+                    onClickCapture={onClickCapture}
+                >
                     {items.map(b => (
                         <div className="reel-card" key={b.id}>
                             <BookCard book={b} grid />

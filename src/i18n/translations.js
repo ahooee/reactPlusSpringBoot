@@ -82,7 +82,7 @@ export const STRINGS = {
         "books.reelFeatured": "Featured",
         "books.reelRecommended": "Recommended for you",
         "books.reelTopSellers": "Best sellers",
-        "books.reelHint": "Scroll for more →",
+        "books.reelHint": "Drag or use the arrows to see more",
         "books.comingSoon": "Coming soon",
         "books.comingSoonSub": "Paper books are on the way — check back shortly.",
         "books.book": "Book",
