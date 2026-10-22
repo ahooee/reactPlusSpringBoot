@@ -124,6 +124,11 @@ export default function Books({ kind: kindProp }) {
     crumbs = crumbs.map((c, i) => (i === crumbs.length - 1 ? { label: c.label } : c));
 
     const searchingMode = state === "done" && searching;
+    // Reels are a main-page feature: shown on the books and e-books landing
+    // views only — once a category is picked, a search is active, or the
+    // paper-books visit, the listing stands on its own.
+    const showReels =
+        (kind === "all" || kind === "ebook") && activeCat === "all";
 
     return (
         <>
@@ -209,7 +214,7 @@ export default function Books({ kind: kindProp }) {
 
                     {/* Main column: reels + results */}
                     <div className="bk-main">
-                        {state === "done" && !searchingMode && reels && (
+                        {state === "done" && !searchingMode && showReels && reels && (
                             <>
                                 <Reel
                                     title={t("books.reelFeatured")}
