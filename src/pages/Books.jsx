@@ -30,7 +30,8 @@ function typeFor(kind) {
  *
  *   /books             → all downloaded books
  *   /books/ebooks      → e-books (every row in the table is an e-book)
- *   /books/paper-books → paper books (none exist in this source yet)
+ *   /books/paper-books → coming soon: dim overlay countdown, then lands on
+ *                        /books/ebooks (handled by PaperSoon, not here)
  */
 export default function Books({ kind: kindProp }) {
     const kind = kindOf(kindProp);

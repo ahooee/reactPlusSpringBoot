@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./PaperSoon.css";
 import { useLanguage } from "../context/LanguageContext";
 
@@ -7,24 +8,33 @@ export function showPaperSoon() {
     window.dispatchEvent(new CustomEvent("paper-books-soon"));
 }
 
-/**
- * Global "coming soon" overlay for paper-book links. Mounted once in
- * App.jsx. Any click anywhere on the site on a link whose path is
- * {@code /books/paper-books} is intercepted (capture phase, primary
- * unmodified clicks only) — the page dims, a 3-second circular countdown
- * runs, then the overlay closes and the user stays put.
- */
-export default function PaperSoon() {
-    const [open, setOpen] = useState(false);
-    const { t } = useLanguage();
+const PAPER_PATHS = new Set(["/books/paper-books", "/books/paper-books/"]);
 
+/**
+ * Global "coming soon" overlay for paper books. Mounted once in App.jsx
+ * (no props): intercepts any click site-wide on a link to
+ * {@code /books/paper-books} — the page dims and a 3-second circular
+ * countdown runs, then the overlay closes and the user stays put.
+ *
+ * Also used as the {@code /books/paper-books} route element with
+ * {@code redirect}: typed / bookmarked / revisited URLs open the overlay
+ * immediately and navigate to {@code /books/ebooks} when the ring
+ * completes or the dim is clicked. Replacement navigation keeps the paper
+ * URL out of history.
+ */
+export default function PaperSoon({ redirect }) {
+    // Route variant (redirect set) is open on arrival; the global instance
+    // waits for paper-book clicks / the appearing-soon dispatch.
+    const [open, setOpen] = useState(Boolean(redirect));
+    const { t } = useLanguage();
+    const navigate = useNavigate();
+
+    // Site-wide click net — only on the global (non-route) instance.
     useEffect(() => {
+        if (redirect) return undefined;
         const onShow = () => setOpen(true);
         window.addEventListener("paper-books-soon", onShow);
 
-        // One net for the whole site: navbar menus, breadcrumbs, generated
-        // content… anything linking /books/paper-books shows the overlay
-        // instead of navigating (ctrl/middle clicks keep normal behavior).
         const onClickCapture = e => {
             if (e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
             const link = e.target?.closest?.('a[href]') || null;
@@ -35,7 +45,7 @@ export default function PaperSoon() {
             } catch {
                 return;
             }
-            if (path === "/books/paper-books" || path === "/books/paper-books/") {
+            if (PAPER_PATHS.has(path)) {
                 e.preventDefault();
                 e.stopPropagation();
                 onShow();
@@ -47,13 +57,17 @@ export default function PaperSoon() {
             window.removeEventListener("paper-books-soon", onShow);
             document.removeEventListener("click", onClickCapture, true);
         };
-    }, []);
+    }, [redirect]);
 
+    // 3s countdown: plain overlay closes; the route variant redirects.
     useEffect(() => {
         if (!open) return undefined;
-        const timer = setTimeout(() => setOpen(false), 3000);
+        const timer = setTimeout(() => {
+            if (redirect) navigate(redirect, { replace: true });
+            else setOpen(false);
+        }, 3000);
         return () => clearTimeout(timer);
-    }, [open]);
+    }, [open, redirect, navigate]);
 
     if (!open) return null;
 
@@ -62,7 +76,7 @@ export default function PaperSoon() {
             className="paper-soon"
             role="alert"
             aria-live="polite"
-            onClick={() => setOpen(false)}
+            onClick={() => (redirect ? navigate(redirect, { replace: true }) : setOpen(false))}
         >
             <div className="paper-soon-card" onClick={e => e.stopPropagation()}>
                 <span className="paper-soon-emoji" aria-hidden="true">📕</span>

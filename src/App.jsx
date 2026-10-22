@@ -55,7 +55,7 @@ function App() {
                 <Route path="/shop" element={<Navigate to="/books" replace />} />
                 <Route path="/books" element={<Books kind="all" />} />
                 <Route path="/books/ebooks" element={<Books kind="ebook" />} />
-                <Route path="/books/paper-books" element={<Books kind="paper" />} />
+                <Route path="/books/paper-books" element={<PaperSoon redirect="/books/ebooks" />} />
                 <Route path="/books/:id" element={<BookDetail />} />
                 <Route path="/shop/:slug" element={<ProductDetail />} />
                 <Route path="/basket" element={<Basket />} />
