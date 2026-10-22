@@ -235,7 +235,15 @@ export default function Books({ kind: kindProp }) {
                         )}
 
                         <div className="amz-row-head">
-                            <h2>{searchingMode ? t("books.results") : title}</h2>
+                            <h2>
+                                {searchingMode
+                                    ? t("books.results")
+                                    : activeCat === "none"
+                                        ? t("shop.uncategorized")
+                                        : activeCatObj
+                                            ? catName(activeCatObj)
+                                            : title}
+                            </h2>
                             <span className="amz-count">{t("books.count", { n: filtered.length })}</span>
                         </div>
 
