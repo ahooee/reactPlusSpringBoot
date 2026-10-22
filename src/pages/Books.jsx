@@ -37,6 +37,7 @@ export default function Books({ kind: kindProp }) {
     const wantType = typeFor(kind);
     const [books, setBooks] = useState([]);
     const [categories, setCategories] = useState([]);
+    const [languages, setLanguages] = useState([]);
     const [reels, setReels] = useState(null);
     const [state, setState] = useState("loading");
     const { t, lang } = useLanguage();
@@ -44,6 +45,11 @@ export default function Books({ kind: kindProp }) {
     const qParam = searchParams.get("q") || "";
     const [query, setQuery] = useState(qParam);
     const activeCat = searchParams.get("category") || "all";
+    const activeLang = searchParams.get("language") || "all";
+
+    // Languages are stored messy in the table ("english"/"English", etc.) —
+    // comparisons are normalized the same way the /languages API groups them.
+    const normLang = v => (v || "").trim().toLowerCase();
     // There is no "All books" kind anymore: e-books are auto-selected as the
     // current kind (also for kindProp="all") until real paper books exist.
     const title = kind === "paper"
@@ -70,6 +76,11 @@ export default function Books({ kind: kindProp }) {
                 if (!cancelled) setCategories(Array.isArray(data) ? data : []);
             })
             .catch(() => {});
+        apiFetch("/api/books/languages")
+            .then(data => {
+                if (!cancelled) setLanguages(Array.isArray(data) ? data : []);
+            })
+            .catch(() => {});
         apiFetch("/api/books/reels")
             .then(data => {
                 if (!cancelled) setReels(data || null);
@@ -94,6 +105,9 @@ export default function Books({ kind: kindProp }) {
                 .toLowerCase();
             if (!haystack.includes(needle)) return false;
         }
+        if (activeLang !== "all" && normLang(b.language) !== normLang(activeLang)) {
+            return false;
+        }
         if (activeCat === "all") return true;
         if (activeCat === "none") return !b.categorySlug;
         return b.categorySlug === activeCat;
@@ -101,10 +115,40 @@ export default function Books({ kind: kindProp }) {
 
     function pickCategory(slug) {
         const next = {};
-        if (slug && slug !== "all") next.category = slug;
         if (query.trim()) next.q = query.trim();
+        if (activeLang !== "all") next.language = activeLang;
+        if (slug && slug !== "all") next.category = slug;
         setSearchParams(next);
     }
+
+    function pickLanguage(lang) {
+        // clicking the active language again clears it
+        const want = lang === activeLang ? "all" : lang;
+        const search = new URLSearchParams(searchParams);
+        if (want && want !== "all") search.set("language", want);
+        else search.delete("language");
+        setSearchParams(search);
+    }
+
+    const LANG_FA = {
+        english: "انگلیسی",
+        persian: "فارسی",
+        arabic: "عربی",
+        chinese: "چینی",
+        german: "آلمانی",
+        french: "فرانسوی",
+        spanish: "اسپانیایی",
+        italian: "ایتالیایی",
+        indonesian: "اندونزیایی",
+        urdu: "اردو",
+        russian: "روسی",
+        portuguese: "پرتغالی",
+        albanian: "آلبانیایی",
+        "traditional chinese": "چینی سنتی",
+        unknown: "نامشخص",
+    };
+    const langLabel = l =>
+        lang === "fa" ? LANG_FA[normLang(l)] || l : l;
 
     const catName = c => (lang === "fa" && c.nameFa ? c.nameFa : c.name);
     const activeCatObj =
@@ -124,10 +168,12 @@ export default function Books({ kind: kindProp }) {
 
     const searchingMode = state === "done" && searching;
     // Reels are a main-page feature: shown on the books and e-books landing
-    // views only — once a category is picked, a search is active, or the
-    // paper-books visit, the listing stands on its own.
+    // views only — any engaged filter (category, language, search) or the
+    // paper-books visit lets the listing stand on its own.
     const showReels =
-        (kind === "all" || kind === "ebook") && activeCat === "all";
+        (kind === "all" || kind === "ebook")
+        && activeCat === "all"
+        && activeLang === "all";
 
     return (
         <>
@@ -158,7 +204,6 @@ export default function Books({ kind: kindProp }) {
                 <div className="bk-body">
                     {/* Category sidebar (desktop) */}
                     <aside className="bk-side">
-                        <div className="bk-side-head">{t("books.categories")}</div>
                         <nav className="bk-side-list">
                             {/* e-books is the selection by default (kind "all"
                                 aliases it) until books become available */}
@@ -179,6 +224,31 @@ export default function Books({ kind: kindProp }) {
                                 <span>📕 {t("books.titlePaper")}</span>
                             </Link>
                             <div className="bk-side-sep" />
+
+                            {/* Languages auto-discovered from the books table */}
+                            <div className="bk-side-head">{t("books.byLanguage")}</div>
+                            <button
+                                className={`bk-side-item${activeLang === "all" ? " on" : ""}`}
+                                onClick={() => pickLanguage("all")}
+                            >
+                                <span>{t("shop.all")}</span>
+                                <span className="bk-side-count">{visible.length}</span>
+                            </button>
+                            {languages.map(l => (
+                                <button
+                                    key={l.language}
+                                    className={`bk-side-item${activeLang === l.language ? " on" : ""}`}
+                                    onClick={() => pickLanguage(l.language)}
+                                >
+                                    <span>{langLabel(l.language)}</span>
+                                    <span className="bk-side-count">{l.count}</span>
+                                </button>
+                            ))}
+                            <div className="bk-side-sep" />
+                        </nav>
+
+                        <div className="bk-side-head">{t("books.categories")}</div>
+                        <nav className="bk-side-list">
                             <button
                                 className={`bk-side-item${activeCat === "all" ? " on" : ""}`}
                                 onClick={() => pickCategory("all")}
