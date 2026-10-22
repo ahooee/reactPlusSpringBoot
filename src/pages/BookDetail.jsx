@@ -19,7 +19,7 @@ export default function BookDetail() {
     const { id } = useParams();
     const { t, lang } = useLanguage();
     const { showToast } = useToast();
-    const { items, addLibraryBook, remove, setOpen } = useCart();
+    const { items, addLibraryBook, remove } = useCart();
     const [book, setBook] = useState(null);
     const [state, setState] = useState("loading");
     const [broken, setBroken] = useState(false);
@@ -60,7 +60,6 @@ export default function BookDetail() {
         setBuying(true);
         try {
             await addLibraryBook(book.id);
-            setOpen(true);
         } catch (err) {
             showToast(err?.message || t("books.buyError"));
         } finally {
