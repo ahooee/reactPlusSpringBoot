@@ -6,7 +6,9 @@ import ProductRail from "../components/ProductRail";
 import { API_URL } from "../lib/api";
 import { useLanguage } from "../context/LanguageContext";
 import { usePageTitle } from "../lib/usePageTitle";
-import BlockRenderer from "../components/BlockRenderer";
+import HTMLRenderer from "@react-page/editor/lib/renderer/HTMLRenderer";
+import { cellPlugins } from "../components/pageBuilderPlugins";
+import "@react-page/editor/lib/index.css";
 
 function isHtml(s) {
     return /<[a-z][\s\S]*>/i.test(s);
@@ -30,13 +32,16 @@ export default function Page() {
                 if (!response.ok) throw new Error(response.status === 404 ? t("page.notFound") : "Failed to load page");
                 const result = await response.json();
                 const loadedPage = result.data;
-                if (typeof loadedPage.content === "string") {
+                let content = loadedPage.content;
+                if (typeof content === "string") {
                     try {
-                        loadedPage.content = JSON.parse(loadedPage.content || "[]");
+                        const parsed = JSON.parse(content || "null");
+                        content = parsed === null || parsed === undefined ? null : parsed;
                     } catch {
-                        loadedPage.content = [{ type: "richtext", content: loadedPage.content }];
+                        content = content || null;
                     }
                 }
+                loadedPage.content = content;
                 setPage(loadedPage);
             } catch (err) {
                 if (err.name !== "AbortError") setError(err.message);
@@ -75,11 +80,9 @@ export default function Page() {
                 <article className="page-article">
                     <Breadcrumbs items={[{ to: "/", label: t("nav.home") }, { label: page.title }]} />
                     <h1>{page.title}</h1>
-                    {Array.isArray(content) ? (
+                    {content ? (
                         <div className="page-blocks">
-                            {content.map((block, i) => (
-                                <BlockRenderer key={block.id || i} block={block} t={t} />
-                            ))}
+                            <HTMLRenderer value={content} cellPlugins={cellPlugins} lang="en" />
                         </div>
                     ) : typeof content === "string" ? (
                         isHtml(content) ? (

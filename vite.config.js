@@ -1,12 +1,28 @@
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 
-
-
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-   server: {
+  optimizeDeps: {
+    include: [
+      'react',
+      'react-dom',
+      '@react-page/editor',
+      '@react-page/plugins-slate',
+      '@react-page/plugins-image',
+      '@react-page/plugins-background',
+      '@react-page/plugins-divider',
+      '@react-page/plugins-spacer',
+    ],
+  },
+  resolve: {
+    conditions: ['module', 'browser', 'production', 'import', 'default'],
+    alias: {
+      'react/jsx-runtime.js': 'react/jsx-runtime',
+    },
+  },
+  server: {
     host: '0.0.0.0',
     port: 5173,
     proxy: {
@@ -22,4 +38,3 @@ export default defineConfig({
     }
   }
 })
-

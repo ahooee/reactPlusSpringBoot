@@ -5,7 +5,7 @@ import { apiFetch } from "../../lib/api";
 import { useLanguage } from "../../context/LanguageContext";
 import { usePageTitle } from "../../lib/usePageTitle";
 
-const empty = { title: "", slug: "", content: "[]", status: "PUBLISHED" };
+const empty = { title: "", slug: "", content: "null", status: "PUBLISHED" };
 
 export default function AdminPages() {
     const [pages, setPages] = useState([]);
@@ -72,7 +72,11 @@ export default function AdminPages() {
                     </label>
                 </div>
                 <label style={{ marginTop: 16, display: "block", fontWeight: 600 }}>{t("pages.content")}</label>
-                <PageBuilder value={form.content} onChange={content => setForm({ ...form, content })} />
+                <PageBuilder
+                    key={editing ?? "new"}
+                    value={form.content}
+                    onChange={content => setForm({ ...form, content })}
+                />
                 <div style={{ marginTop: 16 }}>
                     <button className="btn" type="submit">{editing ? t("pages.save") : t("pages.create")}</button>
                     {editing && <button type="button" className="small-btn" style={{ marginLeft: 8 }} onClick={reset}>{t("pages.cancel")}</button>}
