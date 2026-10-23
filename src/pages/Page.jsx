@@ -6,6 +6,7 @@ import ProductRail from "../components/ProductRail";
 import { API_URL } from "../lib/api";
 import { useLanguage } from "../context/LanguageContext";
 import { usePageTitle } from "../lib/usePageTitle";
+import BlockRenderer from "../components/BlockRenderer";
 
 function isHtml(s) {
     return /<[a-z][\s\S]*>/i.test(s);
@@ -31,9 +32,9 @@ export default function Page() {
                 const loadedPage = result.data;
                 if (typeof loadedPage.content === "string") {
                     try {
-                        loadedPage.content = JSON.parse(loadedPage.content || "{}");
+                        loadedPage.content = JSON.parse(loadedPage.content || "[]");
                     } catch {
-                        // keep as raw string
+                        loadedPage.content = [{ type: "richtext", content: loadedPage.content }];
                     }
                 }
                 setPage(loadedPage);
@@ -74,7 +75,13 @@ export default function Page() {
                 <article className="page-article">
                     <Breadcrumbs items={[{ to: "/", label: t("nav.home") }, { label: page.title }]} />
                     <h1>{page.title}</h1>
-                    {typeof content === "string" ? (
+                    {Array.isArray(content) ? (
+                        <div className="page-blocks">
+                            {content.map((block, i) => (
+                                <BlockRenderer key={block.id || i} block={block} t={t} />
+                            ))}
+                        </div>
+                    ) : typeof content === "string" ? (
                         isHtml(content) ? (
                             <div className="prose" dangerouslySetInnerHTML={{ __html: content }} />
                         ) : (

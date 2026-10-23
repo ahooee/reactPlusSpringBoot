@@ -1,29 +1,16 @@
 import { useEffect, useState } from "react";
 import AdminLayout from "../../components/AdminLayout";
-import RichTextEditor from "../../components/RichTextEditor";
+import BlockEditor from "../../components/BlockEditor";
 import { apiFetch } from "../../lib/api";
 import { useLanguage } from "../../context/LanguageContext";
 import { usePageTitle } from "../../lib/usePageTitle";
 
-const empty = { title: "", slug: "", content: "", status: "PUBLISHED" };
-
-function isJsonObject(s) {
-    if (typeof s !== "string") return false;
-    const trimmed = s.trim();
-    if (!trimmed.startsWith("{")) return false;
-    try {
-        const parsed = JSON.parse(trimmed);
-        return parsed && typeof parsed === "object" && !Array.isArray(parsed);
-    } catch {
-        return false;
-    }
-}
+const empty = { title: "", slug: "", content: "[]", status: "PUBLISHED" };
 
 export default function AdminPages() {
     const [pages, setPages] = useState([]);
     const [form, setForm] = useState(empty);
     const [editing, setEditing] = useState(null);
-    const [mode, setMode] = useState("visual");
     const { t } = useLanguage();
     usePageTitle(t("pages.title"));
 
@@ -36,7 +23,6 @@ export default function AdminPages() {
     function reset() {
         setForm(empty);
         setEditing(null);
-        setMode("visual");
     }
 
     async function handleSubmit(e) {
@@ -52,28 +38,12 @@ export default function AdminPages() {
 
     function startEdit(p) {
         setEditing(p.id);
-        const raw = typeof p.content === "string" ? p.content : JSON.stringify(p.content, null, 2);
-        if (isJsonObject(raw)) {
-            setMode("source");
-            try {
-                setForm({
-                    title: p.title || "",
-                    slug: p.slug || "",
-                    content: JSON.stringify(JSON.parse(raw), null, 2),
-                    status: p.status || "PUBLISHED",
-                });
-            } catch {
-                setForm({ title: p.title || "", slug: p.slug || "", content: raw, status: p.status || "PUBLISHED" });
-            }
-        } else {
-            setMode("visual");
-            setForm({
-                title: p.title || "",
-                slug: p.slug || "",
-                content: raw || "",
-                status: p.status || "PUBLISHED",
-            });
-        }
+        setForm({
+            title: p.title || "",
+            slug: p.slug || "",
+            content: typeof p.content === "string" ? p.content : JSON.stringify(p.content, null, 2),
+            status: p.status || "PUBLISHED",
+        });
     }
 
     async function remove(id) {
@@ -94,27 +64,10 @@ export default function AdminPages() {
                 </div>
                 <div>
                     <label>{t("pages.content")}</label>
-                    <div className="admin-actions" style={{ marginBottom: 8 }}>
-                        <button type="button" className={`small-btn${mode === "visual" ? " active" : ""}`} onClick={() => setMode("visual")}>{t("pages.modeVisual")}</button>
-                        <button type="button" className={`small-btn${mode === "source" ? " active" : ""}`} onClick={() => setMode("source")}>{t("pages.modeSource")}</button>
-                    </div>
-                    {mode === "visual" ? (
-                        <RichTextEditor
-                            key={editing ?? "new"}
-                            value={isJsonObject(form.content) ? "" : form.content}
-                            onChange={html => setForm({ ...form, content: html })}
-                        />
-                    ) : (
-                        <textarea
-                            value={form.content}
-                            onChange={e => setForm({ ...form, content: e.target.value })}
-                            rows={12}
-                            dir="auto"
-                        />
-                    )}
-                    {isJsonObject(form.content) && mode === "visual" && (
-                        <p className="muted" style={{ marginTop: 6 }}>{t("pages.jsonNote")}</p>
-                    )}
+                    <BlockEditor
+                        value={form.content}
+                        onChange={content => setForm({ ...form, content })}
+                    />
                 </div>
                 <div>
                     <button className="btn" type="submit">{editing ? t("pages.save") : t("pages.create")}</button>
