@@ -7,6 +7,7 @@
     background: var(--bg);
     color: var(--text);
     outline: none;
+    border: 2px solid var(--accent);
 }
 
 /* Ensure the editor canvas takes available height */
@@ -14,4 +15,10 @@
 .pb-page-wrapper [class*="Editor__editable"],
 .pb-page-wrapper [class*="editable"] {
     min-height: 600px;
+}
+
+.pb-error {
+    padding: 20px;
+    background: var(--bg);
+    color: var(--text);
 }
