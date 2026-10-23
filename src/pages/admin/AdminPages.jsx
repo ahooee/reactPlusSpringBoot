@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import AdminLayout from "../../components/AdminLayout";
-import GutenbergEditor from "../../components/GutenbergEditor";
+import RichTextEditor from "../../components/RichTextEditor";
 import { apiFetch } from "../../lib/api";
 import { useLanguage } from "../../context/LanguageContext";
 import { usePageTitle } from "../../lib/usePageTitle";
 
-const empty = { title: "", slug: "", content: "[]", status: "PUBLISHED" };
+const empty = { title: "", slug: "", content: "", status: "PUBLISHED" };
 
 export default function AdminPages() {
     const [pages, setPages] = useState([]);
@@ -41,7 +41,7 @@ export default function AdminPages() {
         setForm({
             title: p.title || "",
             slug: p.slug || "",
-            content: typeof p.content === "string" ? p.content : JSON.stringify(p.content, null, 2),
+            content: typeof p.content === "string" ? p.content : (p.content || ""),
             status: p.status || "PUBLISHED",
         });
     }
@@ -55,20 +55,25 @@ export default function AdminPages() {
     return (
         <AdminLayout>
             <h1>{t("pages.title")}</h1>
-            <p className="muted">{t("pages.hint")}</p>
             <form className="form" onSubmit={handleSubmit}>
                 <h3>{editing ? t("pages.edit") : t("pages.new")}</h3>
+                <label>{t("pages.name")}
+                    <input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required />
+                </label>
                 <div className="form-row">
-                    <label>{t("pages.name")}<input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required /></label>
-                    <label>{t("pages.slug")}<input value={form.slug} onChange={e => setForm({ ...form, slug: e.target.value })} required /></label>
+                    <label>{t("pages.slug")}
+                        <input value={form.slug} onChange={e => setForm({ ...form, slug: e.target.value })} required />
+                    </label>
+                    <label>{t("pages.statusLabel") || "Status"}
+                        <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value })}>
+                            <option value="PUBLISHED">{t("pages.statusPublished") || "Published"}</option>
+                            <option value="DRAFT">{t("pages.statusDraft") || "Draft"}</option>
+                        </select>
+                    </label>
                 </div>
-                <div style={{ marginTop: 16 }}>
-                    <label>{t("pages.content")}</label>
-                    <GutenbergEditor
-                        value={form.content}
-                        onChange={content => setForm({ ...form, content })}
-                    />
-                </div>
+                <label>{t("pages.content")}
+                    <RichTextEditor key={editing ? editing : "new"} value={form.content} onChange={html => setForm({ ...form, content: html })} />
+                </label>
                 <div style={{ marginTop: 16 }}>
                     <button className="btn" type="submit">{editing ? t("pages.save") : t("pages.create")}</button>
                     {editing && <button type="button" className="small-btn" style={{ marginLeft: 8 }} onClick={reset}>{t("pages.cancel")}</button>}
@@ -76,16 +81,24 @@ export default function AdminPages() {
             </form>
 
             <table className="admin-table" style={{ marginTop: 28 }}>
-                <thead><tr><th>{t("pages.colTitle")}</th><th>{t("pages.colSlug")}</th><th>{t("common.actions")}</th></tr></thead>
+                <thead>
+                    <tr>
+                        <th>{t("pages.colTitle")}</th>
+                        <th>{t("pages.colSlug")}</th>
+                        <th>{t("common.actions")}</th>
+                    </tr>
+                </thead>
                 <tbody>
                     {pages.map(p => (
                         <tr key={p.id}>
                             <td>{p.title}</td>
                             <td className="muted">/{p.slug}</td>
-                            <td><div className="admin-actions">
-                                <button className="small-btn" onClick={() => startEdit(p)}>{t("common.edit")}</button>
-                                <button className="small-btn danger" onClick={() => remove(p.id)}>{t("common.delete")}</button>
-                            </div></td>
+                            <td>
+                                <div className="admin-actions">
+                                    <button className="small-btn" onClick={() => startEdit(p)}>{t("common.edit")}</button>
+                                    <button className="small-btn danger" onClick={() => remove(p.id)}>{t("common.delete")}</button>
+                                </div>
+                            </td>
                         </tr>
                     ))}
                 </tbody>
