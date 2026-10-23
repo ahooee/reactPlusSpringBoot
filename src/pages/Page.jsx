@@ -29,28 +29,14 @@ export default function Page() {
                 const response = await fetch(`${API_URL}/api/pages/${slug}`, { signal: controller.signal });
                 if (!response.ok) throw new Error(response.status === 404 ? t("page.notFound") : "Failed to load page");
                 const result = await response.json();
-                let loadedPage = result.data;
-                let theme = "default";
-                let content = [];
+                const loadedPage = result.data;
                 if (typeof loadedPage.content === "string") {
                     try {
-                        const parsed = JSON.parse(loadedPage.content || "{}");
-                        if (parsed && parsed.blocks) {
-                            theme = parsed.theme || "default";
-                            content = parsed.blocks;
-                        } else if (Array.isArray(parsed)) {
-                            content = parsed;
-                        } else if (typeof parsed === "string" && parsed.trim()) {
-                            content = [{ type: "richtext", content: parsed }];
-                        }
+                        loadedPage.content = JSON.parse(loadedPage.content || "[]");
                     } catch {
-                        content = [{ type: "richtext", content: loadedPage.content }];
+                        loadedPage.content = [{ type: "richtext", content: loadedPage.content }];
                     }
-                } else if (Array.isArray(loadedPage.content)) {
-                    content = loadedPage.content;
                 }
-                loadedPage.theme = theme;
-                loadedPage.content = content;
                 setPage(loadedPage);
             } catch (err) {
                 if (err.name !== "AbortError") setError(err.message);
@@ -60,7 +46,7 @@ export default function Page() {
             loadPage();
         }
         return () => controller.abort();
-    }, [slug, t]);
+    }, [slug]);
 
     if (error) {
         return (
@@ -81,7 +67,6 @@ export default function Page() {
     if (!page) return <p className="page-state">{t("page.loading")}</p>;
 
     const content = page.content;
-    const theme = page.theme || "default";
 
     return (
         <>
@@ -90,25 +75,23 @@ export default function Page() {
                 <article className="page-article">
                     <Breadcrumbs items={[{ to: "/", label: t("nav.home") }, { label: page.title }]} />
                     <h1>{page.title}</h1>
-                    <div className={`theme-${theme} page-content`}>
-                        {Array.isArray(content) ? (
-                            <div className="page-blocks">
-                                {content.map((block, i) => (
-                                    <BlockRenderer key={block.id || i} block={block} t={t} />
-                                ))}
-                            </div>
-                        ) : typeof content === "string" ? (
-                            isHtml(content) ? (
-                                <div className="prose" dangerouslySetInnerHTML={{ __html: content }} />
-                            ) : (
-                                <div className="prose"><p style={{ whiteSpace: "pre-wrap" }}>{content}</p></div>
-                            )
+                    {Array.isArray(content) ? (
+                        <div className="page-blocks">
+                            {content.map((block, i) => (
+                                <BlockRenderer key={block.id || i} block={block} t={t} />
+                            ))}
+                        </div>
+                    ) : typeof content === "string" ? (
+                        isHtml(content) ? (
+                            <div className="prose" dangerouslySetInnerHTML={{ __html: content }} />
                         ) : (
-                            <pre style={{ background: "var(--code-bg)", padding: 16, borderRadius: 12, overflow: "auto" }}>
-                                {JSON.stringify(content, null, 2)}
-                            </pre>
-                        )}
-                    </div>
+                            <div className="prose"><p style={{ whiteSpace: "pre-wrap" }}>{content}</p></div>
+                        )
+                    ) : (
+                        <pre style={{ background: "var(--code-bg)", padding: 16, borderRadius: 12, overflow: "auto" }}>
+                            {JSON.stringify(content, null, 2)}
+                        </pre>
+                    )}
                 </article>
                 <ProductRail />
             </main>
