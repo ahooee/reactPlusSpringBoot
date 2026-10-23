@@ -3,6 +3,12 @@
    Ribbon toolbar + split edit/preview panes + document preview
    ============================================================ */
 
+/* Make the admin editing area wider (Word-like document width). */
+.admin-main {
+    max-width: 1700px;
+    padding: 16px 24px;
+}
+
 .word-form {
     display: flex;
     flex-direction: column;
@@ -157,9 +163,9 @@
 /* ---------- Split edit / preview panes ---------- */
 .word-split {
     display: flex;
-    gap: 12px;
+    gap: 14px;
     margin: 10px 0;
-    min-height: 520px;
+    min-height: 640px;
 }
 
 .word-pane {
@@ -173,13 +179,13 @@
 
 .word-pane-editor {
     flex: 1;
-    min-width: 300px;
+    min-width: 360px;
 }
 
 .word-pane-preview {
     flex: 1;
-    min-width: 320px;
-    max-width: 60vw;
+    min-width: 420px;
+    max-width: 62vw;
 }
 
 .word-pane-header {

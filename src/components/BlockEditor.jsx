@@ -42,6 +42,7 @@ export default function BlockEditor({ value, onChange, readOnly = false }) {
     const [selectedIndex, setSelectedIndex] = useState(null);
     const [showBlockPicker, setShowBlockPicker] = useState(false);
     const [draggingIndex, setDraggingIndex] = useState(null);
+    const [dropTarget, setDropTarget] = useState(null);
     const editorRefs = useRef([]);
 
     useEffect(() => {
@@ -126,65 +127,82 @@ export default function BlockEditor({ value, onChange, readOnly = false }) {
 
     const handleDragStart = (e, index) => {
         setDraggingIndex(index);
+        setDropTarget(null);
         e.dataTransfer.effectAllowed = "move";
     };
 
-    const handleDragOver = (e) => {
+    const handleDragOver = (e, targetIndex) => {
         e.preventDefault();
         e.dataTransfer.dropEffect = "move";
+        if (draggingIndex !== null && draggingIndex !== targetIndex) {
+            setDropTarget(targetIndex);
+        }
     };
 
-    const handleDrop = (e, index) => {
+    const handleDragLeave = () => setDropTarget(null);
+
+    const handleDrop = (e) => {
         e.preventDefault();
-        if (draggingIndex !== null && draggingIndex !== index) {
-            moveBlock(draggingIndex, index);
+        if (draggingIndex !== null && dropTarget !== null && dropTarget !== draggingIndex) {
+            moveBlock(draggingIndex, dropTarget);
         }
         setDraggingIndex(null);
+        setDropTarget(null);
     };
 
-    const handleDragEnd = () => setDraggingIndex(null);
+    const handleDragEnd = () => {
+        setDraggingIndex(null);
+        setDropTarget(null);
+    };
 
     const renderBlock = (block, index) => {
         const isSelected = selectedIndex === index;
         const isDragging = draggingIndex === index;
+        const isDropTarget = dropTarget === index;
         const blockDef = BLOCK_TYPES.find(b => b.type === block.type);
         const label = blockDef?.label[t.lang === "fa" ? "fa" : "en"] || block.type;
 
         return (
-            <div
-                key={block.id || index}
-                className={`block-wrapper ${isSelected ? "selected" : ""} ${isDragging ? "dragging" : ""}`}
-                draggable={!readOnly}
-                onDragStart={e => handleDragStart(e, index)}
-                onDragOver={handleDragOver}
-                onDrop={e => handleDrop(e, index)}
-                onDragEnd={handleDragEnd}
-                onClick={() => !readOnly && setSelectedIndex(index)}
-            >
-                {!readOnly && (
-                    <div className="block-handle" onClick={e => { e.stopPropagation(); setSelectedIndex(index); }}>
-                        <span className="drag-handle" title={t("editor.dragToReorder") || "Drag to reorder"}>⋮⋮</span>
-                        <div className="block-actions">
-                            <button type="button" className="icon-btn" onClick={e => { e.stopPropagation(); duplicateBlock(index); }} title={t("editor.duplicate") || "Duplicate"}>📋</button>
-                            <button type="button" className="icon-btn danger" onClick={e => { e.stopPropagation(); removeBlock(index); }} title={t("editor.delete") || "Delete"}>🗑</button>
+            <>
+                {isDropTarget && (
+                    <div className="drop-zone" onDragOver={e => handleDragOver(e, index)} onDrop={handleDrop} onDragLeave={handleDragLeave} />
+                )}
+                <div
+                    key={block.id || index}
+                    className={`block-wrapper ${isSelected ? "selected" : ""} ${isDragging ? "dragging" : ""} ${isDropTarget ? "drop-target" : ""}`}
+                    draggable={!readOnly}
+                    onDragStart={e => handleDragStart(e, index)}
+                    onDragOver={e => handleDragOver(e, index)}
+                    onDrop={handleDrop}
+                    onDragEnd={handleDragEnd}
+                    onDragLeave={handleDragLeave}
+                    onClick={() => !readOnly && setSelectedIndex(index)}
+                >
+                    {!readOnly && (
+                        <div className="block-handle" onClick={e => { e.stopPropagation(); setSelectedIndex(index); }}>
+                            <span className="drag-handle" title={t("editor.dragToReorder") || "Drag to reorder"}>⋮⋮</span>
+                            <div className="block-actions">
+                                <button type="button" className="icon-btn" onClick={e => { e.stopPropagation(); duplicateBlock(index); }} title={t("editor.duplicate") || "Duplicate"}>📋</button>
+                                <button type="button" className="icon-btn danger" onClick={e => { e.stopPropagation(); removeBlock(index); }} title={t("editor.delete") || "Delete"}>🗑</button>
+                            </div>
                         </div>
+                    )}
+                    <div className="block-content" ref={el => editorRefs.current[index] = el}>
+                        <BlockRenderer
+                            block={block}
+                            index={index}
+                            selected={isSelected}
+                            readOnly={readOnly}
+                            onUpdate={updateBlock}
+                            onUpdateNested={updateNestedBlock}
+                            t={t}
+                        />
                     </div>
-                )}
-                <div className="block-content" ref={el => editorRefs.current[index] = el}>
-                    <BlockRenderer
-                        block={block}
-                        index={index}
-                        selected={isSelected}
-                        readOnly={readOnly}
-                        onUpdate={updateBlock}
-                        onUpdateNested={updateNestedBlock}
-                        t={t}
-                    />
+                    {!readOnly && (
+                        <div className="block-type-badge">{label}</div>
+                    )}
                 </div>
-                {!readOnly && (
-                    <div className="block-type-badge">{label}</div>
-                )}
-            </div>
+            </>
         );
     };
 
@@ -207,6 +225,9 @@ export default function BlockEditor({ value, onChange, readOnly = false }) {
         <div className="block-editor">
             <div className="blocks-container">
                 {blocks.map(renderBlock)}
+                {dropTarget === blocks.length && (
+                    <div className="drop-zone" onDragOver={e => handleDragOver(e, blocks.length)} onDrop={handleDrop} onDragLeave={handleDragLeave} />
+                )}
                 {!readOnly && (
                     <div className="add-block-zone" onClick={() => setShowBlockPicker(true)}>
                         <span>+</span>
@@ -311,6 +332,7 @@ function BlockRenderer({ block, index, selected, readOnly, onUpdate, onUpdateNes
 function RichTextBlock({ block, index, selected, readOnly, onUpdate, onUpdateNested, t }) {
     const editorRef = useRef(null);
     const savedRange = useRef(null);
+    const isFocusedRef = useRef(false);
 
     const saveSelection = () => {
         try {
@@ -335,16 +357,29 @@ function RichTextBlock({ block, index, selected, readOnly, onUpdate, onUpdateNes
         } catch { }
     };
 
-    const emit = (html) => {
-        onUpdate(index, { content: html });
-        saveSelection();
+    // Sync external content changes into the DOM, but never while the user is typing
+    // (otherwise React clobbers the caret mid-keystroke).
+    useEffect(() => {
+        const el = editorRef.current;
+        if (!el || isFocusedRef.current) return;
+        const next = block.content || "";
+        if (el.innerHTML !== next) {
+            el.innerHTML = next;
+        }
+    }, [block.content]);
+
+    const emit = () => {
+        if (editorRef.current) {
+            onUpdate(index, { content: editorRef.current.innerHTML });
+            saveSelection();
+        }
     };
 
     const exec = (cmd, val = null) => {
         restoreSelection();
         document.execCommand("styleWithCSS", false, true);
         document.execCommand(cmd, false, val);
-        emit(editorRef.current.innerHTML);
+        emit();
     };
 
     const addLink = () => {
@@ -353,7 +388,7 @@ function RichTextBlock({ block, index, selected, readOnly, onUpdate, onUpdateNes
         if (!url) return;
         restoreSelection();
         document.execCommand("createLink", false, url);
-        emit(editorRef.current.innerHTML);
+        emit();
     };
 
     const addImageUrl = () => {
@@ -362,7 +397,7 @@ function RichTextBlock({ block, index, selected, readOnly, onUpdate, onUpdateNes
         if (!url) return;
         restoreSelection();
         document.execCommand("insertImage", false, url);
-        emit(editorRef.current.innerHTML);
+        emit();
     };
 
     return (
@@ -406,10 +441,11 @@ function RichTextBlock({ block, index, selected, readOnly, onUpdate, onUpdateNes
                 suppressContentEditableWarning
                 dir="auto"
                 data-placeholder={t("editor.placeholder") || "Write content here…"}
-                onInput={e => emit(e.target.innerHTML)}
+                onInput={emit}
                 onKeyUp={saveSelection}
                 onMouseUp={saveSelection}
-                dangerouslySetInnerHTML={{ __html: block.content || "" }}
+                onFocus={() => { isFocusedRef.current = true; }}
+                onBlur={() => { isFocusedRef.current = false; }}
             />
         </div>
     );

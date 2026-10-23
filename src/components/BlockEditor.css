@@ -52,6 +52,30 @@
     box-shadow: 0 0 0 2px var(--accent-bg), inset 0 0 0 1px var(--accent);
 }
 
+/* Drop target: a block that will receive the dragged block on drop. */
+.block-wrapper.drop-target {
+    outline: 2px dashed var(--accent);
+    outline-offset: -2px;
+    background: var(--accent-soft);
+}
+
+/* Drop zone: thin separator between blocks where you can drop a dragged block. */
+.drop-zone {
+    height: 10px;
+    background: var(--bg-elevated);
+    border: 1px dashed var(--border);
+    border-radius: 6px;
+    margin: 6px 0;
+    cursor: grab;
+}
+
+.drop-zone.drag-over,
+.drop-zone[data-target] {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    height: 14px;
+}
+
 .block-wrapper.dragging {
     opacity: 0.5;
     border-style: dashed;
