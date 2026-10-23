@@ -1,52 +1,17 @@
 import { useEffect, useMemo, useState } from "react";
 import AdminLayout from "../../components/AdminLayout";
-import BlockEditor from "../../components/BlockEditor";
-import BlockRenderer from "../../components/BlockRenderer";
+import WordPressEditor from "../../components/WordPressEditor";
 import { apiFetch } from "../../lib/api";
 import { useLanguage } from "../../context/LanguageContext";
 import { usePageTitle } from "../../lib/usePageTitle";
 import "./AdminPages.css";
 
-const empty = { title: "", slug: "", content: "[]", status: "PUBLISHED" };
-
-const MODES = [
-    { id: "edit", icon: "✎" },
-    { id: "preview", icon: "👁" },
-    { id: "split", icon: "🧩" },
-];
-
-/**
- * Read-only preview of a page, rendered with the same components the
- * public site uses so the admin sees exactly what visitors will see.
- */
-function PagePreview({ blocks, title, t }) {
-    return (
-        <article className="word-page">
-            <header className="word-page-header">
-                <h1>{title || t("page.notFound") || "Untitled Page"}</h1>
-                <span className="word-page-kicker">Preview</span>
-            </header>
-            <div className="word-page-body">
-                {blocks.length === 0 ? (
-                    <div className="word-preview-empty">
-                        <span className="word-preview-empty-icon">📄</span>
-                        <p>{t("pages.previewEmpty")}</p>
-                    </div>
-                ) : (
-                    blocks.map((block, i) => (
-                        <BlockRenderer key={block.id || i} block={block} t={t} />
-                    ))
-                )}
-            </div>
-        </article>
-    );
-}
+const empty = { title: "", slug: "", content: JSON.stringify({ blocks: [], theme: "default" }), status: "PUBLISHED" };
 
 export default function AdminPages() {
     const [pages, setPages] = useState([]);
     const [form, setForm] = useState(empty);
     const [editing, setEditing] = useState(null);
-    const [mode, setMode] = useState("split");
     const { t } = useLanguage();
     usePageTitle(t("pages.title"));
 
@@ -59,15 +24,18 @@ export default function AdminPages() {
     function reset() {
         setForm(empty);
         setEditing(null);
-        setMode("split");
     }
 
     async function handleSubmit(e) {
         e.preventDefault();
+        const payload = {
+            ...form,
+            content: form.content,
+        };
         if (editing) {
-            await apiFetch(`/api/pages/${editing}`, { method: "PUT", body: JSON.stringify(form) });
+            await apiFetch(`/api/pages/${editing}`, { method: "PUT", body: JSON.stringify(payload) });
         } else {
-            await apiFetch("/api/pages", { method: "POST", body: JSON.stringify(form) });
+            await apiFetch("/api/pages", { method: "POST", body: JSON.stringify(payload) });
         }
         reset();
         load();
@@ -89,23 +57,18 @@ export default function AdminPages() {
         load();
     }
 
-    const blocks = useMemo(() => {
+    const initialTheme = useMemo(() => {
         try {
-            const parsed = typeof form.content === "string" ? JSON.parse(form.content || "[]") : form.content;
-            return Array.isArray(parsed) ? parsed : [];
-        } catch {
-            return [];
-        }
+            const parsed = typeof form.content === "string" ? JSON.parse(form.content || "{}") : form.content;
+            return parsed && parsed.theme ? parsed.theme : "default";
+        } catch { return "default"; }
     }, [form.content]);
-
-    const isRTL = document.dir === "rtl" || document.documentElement.dir === "rtl";
 
     return (
         <AdminLayout>
             <h1>{t("pages.title")}</h1>
             <p className="muted">{t("pages.hint")}</p>
 
-            {/* ---------------- Word-like ribbon toolbar ---------------- */}
             <form className="word-form" onSubmit={handleSubmit}>
                 <div className="word-ribbon">
                     <div className="word-ribbon-group word-group-file">
@@ -138,28 +101,6 @@ export default function AdminPages() {
                             </select>
                         </label>
                     </div>
-
-                    <div className="word-ribbon-group word-group-modes">
-                        <span className="word-modes-label">{t("editor.block")}</span>
-                        {MODES.map(m => (
-                            <button
-                                key={m.id}
-                                type="button"
-                                className={`word-mode-btn ${mode === m.id ? "active" : ""}`}
-                                title={
-                                    m.id === "edit"
-                                        ? t("pages.modeEdit")
-                                        : m.id === "preview"
-                                            ? t("pages.modePreview")
-                                            : t("pages.modeSplit")
-                                }
-                                onClick={() => setMode(m.id)}
-                            >
-                                {m.icon}
-                            </button>
-                        ))}
-                    </div>
-
                     <div className="word-ribbon-group word-group-actions">
                         <button type="submit" className="word-btn word-btn-primary">
                             {editing ? t("pages.save") : t("pages.create")}
@@ -172,73 +113,57 @@ export default function AdminPages() {
                     </div>
                 </div>
 
-                {/* ---------------- Edit / Preview panes (Word split view) ---------------- */}
-                <div className="word-split">
-                    {mode !== "preview" && (
-                        <section className="word-pane word-pane-editor">
-                            <div className="word-pane-header">
-                                <span className="word-pane-title">{t("pages.modeEdit")}</span>
-                                <span className="word-pane-count">{t("pages.blocksCount", { n: blocks.length })}</span>
-                            </div>
-                            <BlockEditor
-                                value={form.content}
-                                onChange={content => setForm({ ...form, content })}
-                            />
-                        </section>
-                    )}
-                    {mode !== "edit" && (
-                        <section className="word-pane word-pane-preview">
-                            <div className="word-pane-header">
-                                <span className="word-pane-title">{t("pages.livePreview")}</span>
-                            </div>
-                            <div className="word-preview-wrap">
-                                <PagePreview blocks={blocks} title={form.title} t={t} />
-                            </div>
-                        </section>
-                    )}
-                </div>
+                <WordPressEditor
+                    value={form.content}
+                    onChange={content => setForm({ ...form, content })}
+                    initialTheme={initialTheme}
+                />
             </form>
 
             <p className="muted" style={{ marginTop: 10 }}>
-                {t("editor.dragToReorder") || "Drag blocks"} &nbsp;•&nbsp;
-                {t("pages.modeSplit")} &nbsp;•&nbsp;
-                {isRTL ? "rtl" : "ltr"}
+                {t("editor.dragToReorder") || "Drag blocks to reorder"}
             </p>
 
-            {/* ---------------- Pages list ---------------- */}
             <table className="admin-table" style={{ marginTop: 28 }}>
                 <thead>
                     <tr>
                         <th>{t("pages.colTitle")}</th>
                         <th>{t("pages.colSlug")}</th>
                         <th>{t("pages.statusLabel")}</th>
+                        <th>{t("pages.themeLabel") || "Theme"}</th>
                         <th>{t("common.actions")}</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {pages.map(p => (
-                        <tr key={p.id}>
-                            <td>{p.title}</td>
-                            <td className="muted">/{p.slug}</td>
-                            <td>
-                                <span
-                                    className={`status-chip ${p.status === "PUBLISHED" ? "published" : "draft"}`}
-                                >
-                                    {p.status === "PUBLISHED" ? t("pages.statusPublished") : t("pages.statusDraft")}
-                                </span>
-                            </td>
-                            <td>
-                                <div className="admin-actions">
-                                    <button className="small-btn" onClick={() => startEdit(p)}>
-                                        {t("common.edit")}
-                                    </button>
-                                    <button className="small-btn danger" onClick={() => remove(p.id)}>
-                                        {t("common.delete")}
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    ))}
+                    {pages.map(p => {
+                        let theme = "default";
+                        try {
+                            const parsed = typeof p.content === "string" ? JSON.parse(p.content || "{}") : p.content;
+                            if (parsed && parsed.theme) theme = parsed.theme;
+                        } catch { /* ignore parse errors */ }
+                        return (
+                            <tr key={p.id}>
+                                <td>{p.title}</td>
+                                <td className="muted">/{p.slug}</td>
+                                <td>
+                                    <span className={`status-chip ${p.status === "PUBLISHED" ? "published" : "draft"}`}>
+                                        {p.status === "PUBLISHED" ? t("pages.statusPublished") : t("pages.statusDraft")}
+                                    </span>
+                                </td>
+                                <td>{theme}</td>
+                                <td>
+                                    <div className="admin-actions">
+                                        <button className="small-btn" onClick={() => startEdit(p)}>
+                                            {t("common.edit")}
+                                        </button>
+                                        <button className="small-btn danger" onClick={() => remove(p.id)}>
+                                            {t("common.delete")}
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        );
+                    })}
                 </tbody>
             </table>
         </AdminLayout>
