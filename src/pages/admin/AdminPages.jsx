@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import AdminLayout from "../../components/AdminLayout";
-import RichTextEditor from "../../components/RichTextEditor";
+import PageBuilder from "../../components/PageBuilder";
 import { apiFetch } from "../../lib/api";
 import { useLanguage } from "../../context/LanguageContext";
 import { usePageTitle } from "../../lib/usePageTitle";
 
-const empty = { title: "", slug: "", content: "", status: "PUBLISHED" };
+const empty = { title: "", slug: "", content: "[]", status: "PUBLISHED" };
 
 export default function AdminPages() {
     const [pages, setPages] = useState([]);
@@ -41,7 +41,7 @@ export default function AdminPages() {
         setForm({
             title: p.title || "",
             slug: p.slug || "",
-            content: typeof p.content === "string" ? p.content : (p.content || ""),
+            content: typeof p.content === "string" ? p.content : JSON.stringify(p.content, null, 2),
             status: p.status || "PUBLISHED",
         });
     }
@@ -71,9 +71,8 @@ export default function AdminPages() {
                         </select>
                     </label>
                 </div>
-                <label>{t("pages.content")}
-                    <RichTextEditor key={editing ? editing : "new"} value={form.content} onChange={html => setForm({ ...form, content: html })} />
-                </label>
+                <label style={{ marginTop: 16, display: "block", fontWeight: 600 }}>{t("pages.content")}</label>
+                <PageBuilder value={form.content} onChange={content => setForm({ ...form, content })} />
                 <div style={{ marginTop: 16 }}>
                     <button className="btn" type="submit">{editing ? t("pages.save") : t("pages.create")}</button>
                     {editing && <button type="button" className="small-btn" style={{ marginLeft: 8 }} onClick={reset}>{t("pages.cancel")}</button>}
