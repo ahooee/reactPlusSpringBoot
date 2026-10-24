@@ -2,20 +2,61 @@
 .puck-page-builder {
     display: flex;
     flex-direction: column;
+    min-height: calc(100vh - 120px);
     height: 100%;
-    min-height: 800px;
     background: var(--bg);
     color: var(--text);
     outline: none;
+    position: relative;
+    overflow: hidden;
 }
 
-/* Puck brings its own CSS, but we constrain the editor height */
+/* Puck editor fills available space */
 .puck-page-builder .puck-editor {
-    min-height: 700px;
+    flex: 1;
+    min-height: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    color: var(--text);
 }
 
-/* Make the Puck canvas area fill available space */
+/* Ensure Puck's internal layout and canvas get full height */
+.puck-page-builder [class*="puck-editor__layout"],
+.puck-page-builder [class*="puck-editor__main"],
+.puck-page-builder [class*="puck-editor__canvas-wrapper"],
+.puck-page-builder [class*="puck-canvas"] {
+    flex: 1;
+    min-height: 0;
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+}
+
+/* Puck sidebar and blocks panel - ensure visible background */
+.puck-page-builder [class*="puck-sidebar"],
+.puck-page-builder [class*="puck-blocks"],
+.puck-page-builder [class*="puck-inspector"],
+.puck-page-builder [class*="puck-settings"] {
+    background: var(--card-bg);
+    color: var(--text);
+}
+
+/* Canvas area - must never collapse */
 .puck-page-builder [class*="puck-editor__canvas"],
 .puck-page-builder [class*="canvas"] {
     min-height: 600px;
+    flex: 1;
+    background: var(--bg);
+    color: var(--text);
+    overflow: auto;
+}
+
+/* Ensure all Puck block previews render with visible background */
+.puck-page-builder [class*="puck-block"],
+.puck-page-builder [class*="puck-component"],
+.puck-page-builder section {
+    background: var(--bg);
+    color: var(--text);
 }
