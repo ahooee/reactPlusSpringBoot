@@ -80,25 +80,23 @@ export default function PageBuild() {
                 </div>
             </header>
             <main className="page-build-canvas">
-                <form onSubmit={handlePublish}>
-                    <div className="page-build-fields">
-                        <label>{t("pages.name")}
-                            <input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required />
+                <div className="page-build-fields">
+                    <label>{t("pages.name")}
+                        <input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required />
+                    </label>
+                    <div className="form-row">
+                        <label>{t("pages.slug")}
+                            <input value={form.slug} onChange={e => setForm({ ...form, slug: e.target.value })} required placeholder="/about-us" />
                         </label>
-                        <div className="form-row">
-                            <label>{t("pages.slug")}
-                                <input value={form.slug} onChange={e => setForm({ ...form, slug: e.target.value })} required placeholder="/about-us" />
-                            </label>
-                            <label>{t("pages.statusLabel") || "Status"}
-                                <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value })}>
-                                    <option value="PUBLISHED">{t("pages.statusPublished") || "Published"}</option>
-                                    <option value="DRAFT">{t("pages.statusDraft") || "Draft"}</option>
-                                </select>
-                            </label>
-                        </div>
+                        <label>{t("pages.statusLabel") || "Status"}
+                            <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value })}>
+                                <option value="PUBLISHED">{t("pages.statusPublished") || "Published"}</option>
+                                <option value="DRAFT">{t("pages.statusDraft") || "Draft"}</option>
+                            </select>
+                        </label>
                     </div>
-                    <PuckPageBuilder value={form.content} onChange={handleChange} />
-                </form>
+                </div>
+                <PuckPageBuilder value={form.content} onChange={handleChange} />
             </main>
         </div>
     );

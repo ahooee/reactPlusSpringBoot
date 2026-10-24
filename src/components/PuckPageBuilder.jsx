@@ -77,7 +77,7 @@ const PUCK_COMPONENTS = {
             color: "default",
             layout: { ...defaultLayout },
         },
-        preview: ({ text, align, size, color }) => (
+        render: ({ text, align, size, color }) => (
             <section
                 style={{
                     width: "100%",
@@ -153,7 +153,7 @@ const PUCK_COMPONENTS = {
             align: "left",
             layout: { ...defaultLayout, padding: "8px" },
         },
-        preview: ({ text, level, size, align }) => {
+        render: ({ text, level, size, align }) => {
             const fontSizes = {
                 xs: "16px",
                 s: "20px",
@@ -197,7 +197,7 @@ const PUCK_COMPONENTS = {
             richtext: "<h2>Heading</h2><p>Body</p>",
             layout: { ...defaultLayout },
         },
-        preview: ({ richtext }) => (
+        render: ({ richtext }) => (
             <section style={{ width: "100%", background: "#ffffff", padding: "16px" }} dangerouslySetInnerHTML={{ __html: richtext || "" }} />
         ),
     },
@@ -232,7 +232,7 @@ const PUCK_COMPONENTS = {
             background: "#ffffff",
             layout: defaultLayout,
         },
-        preview: ({ padding, maxWidth, background }) => (
+        render: ({ padding, maxWidth, background }) => (
             <section
                 style={{
                     padding,
@@ -294,7 +294,7 @@ const PUCK_COMPONENTS = {
             wrap: "wrap",
             layout: { ...defaultLayout, grow: true },
         },
-        preview: ({ direction, justifyContent, gap, wrap }) => (
+        render: ({ direction, justifyContent, gap, wrap }) => (
             <section
                 style={{
                     display: "flex",
@@ -336,7 +336,7 @@ const PUCK_COMPONENTS = {
             gap: 24,
             layout: defaultLayout,
         },
-        preview: ({ numColumns, gap }) => (
+        render: ({ numColumns, gap }) => (
             <section
                 style={{
                     display: "grid",
@@ -390,7 +390,7 @@ const PUCK_COMPONENTS = {
             directions: ["vertical", "horizontal"],
             inline: true,
         },
-        preview: ({ size }) => (
+        render: ({ size }) => (
             <div style={{ height: size || "24px", width: "100%", background: "#ffffff" }} />
         ),
     },
@@ -399,7 +399,7 @@ const PUCK_COMPONENTS = {
         label: "Divider",
         fields: {},
         defaultProps: {},
-        preview: () => (
+        render: () => (
             <div
                 style={{
                     height: "1px",
@@ -415,7 +415,7 @@ const PUCK_COMPONENTS = {
         label: "Blank",
         fields: {},
         defaultProps: {},
-        preview: () => <div style={{ width: "100%", height: "40px", background: "#ffffff" }} />,
+        render: () => <div style={{ width: "100%", height: "40px", background: "#ffffff" }} />,
     },
 
     /* ---------- Media blocks ---------- */
@@ -438,7 +438,7 @@ const PUCK_COMPONENTS = {
             src: "",
             alt: "",
         },
-        preview: ({ src }) => (
+        render: ({ src }) => (
             src ? (
                 <section style={{ width: "100%", background: "#ffffff" }}>
                     <img src={src} alt="" style={{ maxWidth: "100%", height: "auto", borderRadius: "8px" }} />
@@ -475,7 +475,7 @@ const PUCK_COMPONENTS = {
         defaultProps: {
             src: "",
         },
-        preview: ({ src }) => (
+        render: ({ src }) => (
             src ? (
                 <section style={{ width: "100%", borderRadius: "8px", overflow: "hidden", background: "#ffffff" }}>
                     <iframe src={src} style={{ width: "100%", height: "300px", border: "0" }} />
@@ -533,7 +533,7 @@ const PUCK_COMPONENTS = {
             variant: "primary",
             layout: defaultLayout,
         },
-        preview: ({ label, variant }) => {
+        render: ({ label, variant }) => {
             const styles = {
                 primary: {
                     background: "#2563eb",
@@ -608,7 +608,7 @@ const PUCK_COMPONENTS = {
             mode: "flat",
             layout: defaultLayout,
         },
-        preview: ({ title, description, mode }) => (
+        render: ({ title, description, mode }) => (
             <section
                 style={{
                     border: mode === "card" ? "1px solid #e5e7eb" : "none",
@@ -656,7 +656,7 @@ const PUCK_COMPONENTS = {
             ],
             layout: defaultLayout,
         },
-        preview: ({ items }) => {
+        render: ({ items }) => {
             const stats = items || [{ title: "Stat", description: "1,000" }];
             return (
                 <section
@@ -728,7 +728,7 @@ const PUCK_COMPONENTS = {
             ],
             layout: defaultLayout,
         },
-        preview: ({ logos }) => {
+        render: ({ logos }) => {
             const logoList = logos || [];
             return (
                 <section
@@ -805,7 +805,7 @@ const PUCK_COMPONENTS = {
             padding: "64px",
             layout: defaultLayout,
         },
-        preview: ({ title, description, align, image, padding }) => (
+        render: ({ title, description, align, image, padding }) => (
             <section
                 style={{
                     width: "100%",
@@ -859,7 +859,7 @@ const PUCK_COMPONENTS = {
             template: "example_1",
             layout: defaultLayout,
         },
-        preview: ({ template }) => (
+        render: ({ template }) => (
             <section style={{ width: "100%", padding: "24px", background: "#ffffff" }}>
                 <div style={{ color: "#6b7280", fontSize: "14px", fontStyle: "italic" }}>
                     Template: {template} (configured on edit)
