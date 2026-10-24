@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import AdminLayout from "../../components/AdminLayout";
+import PageBuilderLayout from "../../components/PageBuilderLayout";
+import "../../components/PageBuilderLayout.css";
 import PuckPageBuilder from "../../components/PuckPageBuilder";
 import { apiFetch } from "../../lib/api";
 import { useLanguage } from "../../context/LanguageContext";
@@ -67,14 +68,10 @@ export default function PageBuild() {
     }
 
     return (
-        <AdminLayout>
-            <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 16 }}>
-                <h1>{editing ? t("pages.edit") : t("pages.new")}</h1>
-                <button className="small-btn" type="button" onClick={handleCancel}>
-                    {t("pages.backToPages") || "← Back to pages"}
-                </button>
-            </div>
-
+        <PageBuilderLayout
+            title={editing ? t("pages.edit") : t("pages.new")}
+            onBack={handleCancel}
+        >
             <form className="form" onSubmit={handlePublish}>
                 <label>{t("pages.name")}
                     <input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required />
@@ -101,6 +98,6 @@ export default function PageBuild() {
                     </button>
                 </div>
             </form>
-        </AdminLayout>
+        </PageBuilderLayout>
     );
 }
