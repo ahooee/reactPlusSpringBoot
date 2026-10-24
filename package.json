@@ -14,7 +14,8 @@
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^5.8.0",
     "@mui/material": "^5.18.0",
-    "@puckeditor/core": "^0.23.0",
+    "@puckeditor/core": "^0.24.0-canary.6a823ceb",
+    "lucide-react": "^0.468.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-router-dom": "^7.18.4"

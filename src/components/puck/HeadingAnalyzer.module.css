@@ -1,0 +1,13 @@
+.HeadingAnalyzer {
+    display: block;
+    padding: 16px;
+    font-size: 12px;
+}
+
+.HeadingAnalyzerItem {
+    display: block;
+}
+
+.HeadingAnalyzerItem button:hover {
+    text-decoration: underline;
+}

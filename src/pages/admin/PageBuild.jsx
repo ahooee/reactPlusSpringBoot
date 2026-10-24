@@ -141,6 +141,8 @@ export default function PageBuild() {
                     value={form.content}
                     onChange={handleChange}
                     onPublish={handlePuckPublish}
+                    viewHref={form.slug ? `/${form.slug.replace(/^\/+/, "")}` : undefined}
+                    headerPath={form.slug ? `/${form.slug.replace(/^\/+/, "")}` : undefined}
                 />
             </main>
         </div>

@@ -6,9 +6,12 @@ import ProductRail from "../components/ProductRail";
 import { API_URL } from "../lib/api";
 import { useLanguage } from "../context/LanguageContext";
 import { usePageTitle } from "../lib/usePageTitle";
-import { Render } from "@puckeditor/core";
+import { Render, resolveAllData } from "@puckeditor/core";
 import "@puckeditor/core/puck.css";
-import { PUCK_COMPONENTS as BUILDER_COMPONENTS } from "../components/puckConfig";
+import {
+    PUCK_COMPONENTS as BUILDER_COMPONENTS,
+    PUCK_CONFIG,
+} from "../components/puckConfig";
 
 /* Legacy block shapes kept so pages created with the old editor still render. */
 const LEGACY_PUCK_COMPONENTS = {
@@ -82,7 +85,13 @@ export default function Page() {
                         content = {};
                     }
                 }
-                loadedPage.content = content || {};
+                let resolved = content || {};
+                try {
+                    resolved = await resolveAllData(resolved, PUCK_CONFIG);
+                } catch {
+                    // Legacy page data may contain blocks that no longer exist.
+                }
+                loadedPage.content = resolved;
                 setPage(loadedPage);
             } catch (err) {
                 if (err.name !== "AbortError") setError(err.message);
