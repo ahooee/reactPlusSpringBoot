@@ -1,28 +1,28 @@
-/* Puck Page Builder wrapper */
+/* Puck Page Builder wrapper - solid white background to prevent black screen */
 .puck-page-builder {
     display: flex;
     flex-direction: column;
     min-height: calc(100vh - 120px);
     height: 100%;
-    background: var(--bg);
-    color: var(--text);
+    background: #ffffff !important;
+    color: #111827 !important;
     outline: none;
     position: relative;
     overflow: hidden;
 }
 
-/* Puck editor fills available space */
+/* Puck editor fills available space - solid background */
 .puck-page-builder .puck-editor {
     flex: 1;
     min-height: 0;
     height: 100%;
     display: flex;
     flex-direction: column;
-    background: var(--bg);
-    color: var(--text);
+    background: #ffffff !important;
+    color: #111827 !important;
 }
 
-/* Ensure Puck's internal layout and canvas get full height */
+/* Ensure Puck's internal layout and canvas get full height with solid background */
 .puck-page-builder [class*="puck-editor__layout"],
 .puck-page-builder [class*="puck-editor__main"],
 .puck-page-builder [class*="puck-editor__canvas-wrapper"],
@@ -30,33 +30,25 @@
     flex: 1;
     min-height: 0;
     height: 100%;
-    background: var(--bg);
-    color: var(--text);
+    background: #ffffff !important;
+    color: #111827 !important;
 }
 
-/* Puck sidebar and blocks panel - ensure visible background */
-.puck-page-builder [class*="puck-sidebar"],
-.puck-page-builder [class*="puck-blocks"],
-.puck-page-builder [class*="puck-inspector"],
-.puck-page-builder [class*="puck-settings"] {
-    background: var(--card-bg);
-    color: var(--text);
-}
-
-/* Canvas area - must never collapse */
+/* Canvas area - must never collapse or go black */
 .puck-page-builder [class*="puck-editor__canvas"],
 .puck-page-builder [class*="canvas"] {
     min-height: 600px;
     flex: 1;
-    background: var(--bg);
-    color: var(--text);
-    overflow: auto;
+    background: #ffffff !important;
+    color: #111827 !important;
+    overflow: auto !important;
 }
 
-/* Ensure all Puck block previews render with visible background */
+/* Ensure all Puck block previews render with solid white background */
 .puck-page-builder [class*="puck-block"],
 .puck-page-builder [class*="puck-component"],
-.puck-page-builder section {
-    background: var(--bg);
-    color: var(--text);
+.puck-page-builder section,
+.puck-page-builder > div {
+    background: #ffffff !important;
+    color: #111827 !important;
 }

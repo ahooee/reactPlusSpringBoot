@@ -18,7 +18,7 @@ import "./PuckPageBuilder.css";
 const defaultLayout = {
     padding: "16px",
     maxWidth: "1200px",
-    background: "transparent",
+    background: "#ffffff",
 };
 
 /* ---------- block definitions ---------- */
@@ -81,6 +81,7 @@ const PUCK_COMPONENTS = {
             <section
                 style={{
                     width: "100%",
+                    background: "#ffffff",
                     display: "flex",
                     justifyContent:
                         align === "center"
@@ -89,7 +90,8 @@ const PUCK_COMPONENTS = {
                               ? "flex-end"
                               : "flex-start",
                     fontSize: size === "s" ? "16px" : size === "l" ? "24px" : "20px",
-                    color: color === "muted" ? "#6b7280" : "inherit",
+                    color: color === "muted" ? "#6b7280" : "#111827",
+                    padding: "16px",
                 }}
             >
                 {text}
@@ -163,7 +165,7 @@ const PUCK_COMPONENTS = {
             };
             const Tag = `h${level}`;
             return (
-                <section style={{ width: "100%" }}>
+                <section style={{ width: "100%", background: "#ffffff", padding: "16px" }}>
                     <Tag
                         style={{
                             fontSize: fontSizes[size] ?? "24px",
@@ -172,6 +174,7 @@ const PUCK_COMPONENTS = {
                             margin: "0",
                             fontWeight: 600,
                             display: "block",
+                            color: "#111827",
                         }}
                     >
                         {text}
@@ -195,7 +198,7 @@ const PUCK_COMPONENTS = {
             layout: { ...defaultLayout },
         },
         preview: ({ richtext }) => (
-            <section style={{ width: "100%" }} dangerouslySetInnerHTML={{ __html: richtext || "" }} />
+            <section style={{ width: "100%", background: "#ffffff", padding: "16px" }} dangerouslySetInnerHTML={{ __html: richtext || "" }} />
         ),
     },
 
@@ -220,13 +223,13 @@ const PUCK_COMPONENTS = {
                 type: "text",
                 label: "Background Color",
                 placeholder: "e.g. #f9fafb",
-                defaultValue: "transparent",
+                defaultValue: "#ffffff",
             },
         },
         defaultProps: {
             padding: "16px",
             maxWidth: "1200px",
-            background: "transparent",
+            background: "#ffffff",
             layout: defaultLayout,
         },
         preview: ({ padding, maxWidth, background }) => (
@@ -234,7 +237,7 @@ const PUCK_COMPONENTS = {
                 style={{
                     padding,
                     maxWidth,
-                    background,
+                    background: background || "#ffffff",
                     margin: "0 auto",
                     width: "100%",
                     border: "1px dashed #cbd5e1",
@@ -388,7 +391,7 @@ const PUCK_COMPONENTS = {
             inline: true,
         },
         preview: ({ size }) => (
-            <div style={{ height: size || "24px", width: "100%" }} />
+            <div style={{ height: size || "24px", width: "100%", background: "#ffffff" }} />
         ),
     },
 
@@ -412,7 +415,7 @@ const PUCK_COMPONENTS = {
         label: "Blank",
         fields: {},
         defaultProps: {},
-        preview: () => <div style={{ width: "100%" }} />,
+        preview: () => <div style={{ width: "100%", height: "40px", background: "#ffffff" }} />,
     },
 
     /* ---------- Media blocks ---------- */
@@ -437,7 +440,7 @@ const PUCK_COMPONENTS = {
         },
         preview: ({ src }) => (
             src ? (
-                <section style={{ width: "100%" }}>
+                <section style={{ width: "100%", background: "#ffffff" }}>
                     <img src={src} alt="" style={{ maxWidth: "100%", height: "auto", borderRadius: "8px" }} />
                 </section>
             ) : (
@@ -474,7 +477,7 @@ const PUCK_COMPONENTS = {
         },
         preview: ({ src }) => (
             src ? (
-                <section style={{ width: "100%", borderRadius: "8px", overflow: "hidden" }}>
+                <section style={{ width: "100%", borderRadius: "8px", overflow: "hidden", background: "#ffffff" }}>
                     <iframe src={src} style={{ width: "100%", height: "300px", border: "0" }} />
                 </section>
             ) : (
@@ -545,7 +548,7 @@ const PUCK_COMPONENTS = {
                     display: "inline-block",
                 },
                 secondary: {
-                    background: "transparent",
+                    background: "#ffffff",
                     color: "#2563eb",
                     padding: "10px 20px",
                     borderRadius: "6px",
@@ -611,12 +614,12 @@ const PUCK_COMPONENTS = {
                     border: mode === "card" ? "1px solid #e5e7eb" : "none",
                     borderRadius: "8px",
                     padding: "16px",
-                    background: mode === "card" ? "#ffffff" : "transparent",
+                    background: "#ffffff",
                     boxShadow: mode === "card" ? "0 4px 6px -1px rgba(0, 0, 0, 0.1)" : "none",
                     width: "100%",
                 }}
             >
-                {title && <div style={{ fontSize: "18px", fontWeight: 600, marginBottom: "8px" }}>{title}</div>}
+                {title && <div style={{ fontSize: "18px", fontWeight: 600, marginBottom: "8px", color: "#111827" }}>{title}</div>}
                 {description && <div style={{ color: "#6b7280", fontSize: "14px" }}>{description}</div>}
             </section>
         ),
@@ -663,6 +666,7 @@ const PUCK_COMPONENTS = {
                         gap: "16px",
                         flexWrap: "wrap",
                         width: "100%",
+                        background: "#ffffff",
                     }}
                 >
                     {stats.map((item, i) => (
@@ -678,7 +682,7 @@ const PUCK_COMPONENTS = {
                                 borderRadius: "8px",
                             }}
                         >
-                            <div style={{ fontWeight: 700, fontSize: "20px", marginBottom: "4px" }}>
+                            <div style={{ fontWeight: 700, fontSize: "20px", marginBottom: "4px", color: "#111827" }}>
                                 {item.description}
                             </div>
                             <div style={{ color: "#6b7280", fontSize: "14px" }}>{item.title}</div>
@@ -736,7 +740,7 @@ const PUCK_COMPONENTS = {
                         flexWrap: "wrap",
                         width: "100%",
                         padding: "24px 0",
-                        opacity: "0.5",
+                        background: "#ffffff",
                     }}
                 >
                     {logoList.map((item, i) => (
@@ -821,6 +825,7 @@ const PUCK_COMPONENTS = {
                             fontWeight: 700,
                             margin: "0 0 12px 0",
                             textAlign: align === "center" ? "center" : "left",
+                            color: "#111827",
                         }}
                     >
                         {title}
@@ -855,7 +860,7 @@ const PUCK_COMPONENTS = {
             layout: defaultLayout,
         },
         preview: ({ template }) => (
-            <section style={{ width: "100%", padding: "24px" }}>
+            <section style={{ width: "100%", padding: "24px", background: "#ffffff" }}>
                 <div style={{ color: "#6b7280", fontSize: "14px", fontStyle: "italic" }}>
                     Template: {template} (configured on edit)
                 </div>
@@ -892,7 +897,7 @@ export default function PuckPageBuilder({ value, onChange }) {
     );
 
     return (
-        <div className="puck-page-builder">
+        <div className="puck-page-builder" style={{ background: "#ffffff" }}>
             <Puck
                 config={{ components: PUCK_COMPONENTS }}
                 data={data}
