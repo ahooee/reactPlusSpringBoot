@@ -286,15 +286,20 @@ const PUCK_COMPONENTS = {
                 ],
                 defaultValue: "wrap",
             },
+            items: {
+                type: "slot",
+                label: "Items",
+            },
         },
         defaultProps: {
             direction: "row",
             justifyContent: "start",
             gap: 24,
             wrap: "wrap",
+            items: [],
             layout: { ...defaultLayout, grow: true },
         },
-        render: ({ direction, justifyContent, gap, wrap }) => (
+        render: ({ direction, justifyContent, gap, wrap, items: Items }) => (
             <section
                 style={{
                     display: "flex",
@@ -308,8 +313,7 @@ const PUCK_COMPONENTS = {
                     borderRadius: "8px",
                 }}
             >
-                <div style={{ padding: "12px", background: "#e5e7eb", borderRadius: "6px" }}>Item 1</div>
-                <div style={{ padding: "12px", background: "#e5e7eb", borderRadius: "6px" }}>Item 2</div>
+                <Items />
             </section>
         ),
     },
@@ -330,13 +334,18 @@ const PUCK_COMPONENTS = {
                 min: 0,
                 defaultValue: 24,
             },
+            items: {
+                type: "slot",
+                label: "Items",
+            },
         },
         defaultProps: {
             numColumns: 4,
             gap: 24,
+            items: [],
             layout: defaultLayout,
         },
-        render: ({ numColumns, gap }) => (
+        render: ({ numColumns, gap, items: Items }) => (
             <section
                 style={{
                     display: "grid",
@@ -348,11 +357,7 @@ const PUCK_COMPONENTS = {
                     borderRadius: "8px",
                 }}
             >
-                {[1, 2, 3].map(i => (
-                    <div key={i} style={{ padding: "12px", background: "#e5e7eb", borderRadius: "6px" }}>
-                        Col {i}
-                    </div>
-                ))}
+                <Items />
             </section>
         ),
     },
