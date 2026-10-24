@@ -380,19 +380,9 @@ const PUCK_COMPONENTS = {
                 ],
                 defaultValue: "24px",
             },
-            directions: {
-                type: "checkbox",
-                label: "Directions",
-                options: [
-                    { label: "Vertical", value: "vertical" },
-                    { label: "Horizontal", value: "horizontal" },
-                ],
-                defaultValue: ["vertical", "horizontal"],
-            },
         },
         defaultProps: {
             size: "24px",
-            directions: ["vertical", "horizontal"],
             inline: true,
         },
         render: ({ size }) => (
