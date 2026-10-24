@@ -1,0 +1,21 @@
+/* Puck Page Builder wrapper */
+.puck-page-builder {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 800px;
+    background: var(--bg);
+    color: var(--text);
+    outline: none;
+}
+
+/* Puck brings its own CSS, but we constrain the editor height */
+.puck-page-builder .puck-editor {
+    min-height: 700px;
+}
+
+/* Make the Puck canvas area fill available space */
+.puck-page-builder [class*="puck-editor__canvas"],
+.puck-page-builder [class*="canvas"] {
+    min-height: 600px;
+}

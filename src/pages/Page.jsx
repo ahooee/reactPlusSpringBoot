@@ -6,11 +6,53 @@ import ProductRail from "../components/ProductRail";
 import { API_URL } from "../lib/api";
 import { useLanguage } from "../context/LanguageContext";
 import { usePageTitle } from "../lib/usePageTitle";
-import BlockRenderer from "../components/BlockRenderer";
+import { Render } from "@puckeditor/core";
+import "@puckeditor/core/puck.css";
 
-function isHtml(s) {
-    return /<[a-z][\s\S]*>/i.test(s);
-}
+const PUCK_COMPONENTS = {
+    text: {
+        render: ({ children }) => <p>{children}</p>,
+    },
+    heading: {
+        render: ({ children, level }) => {
+            const Tag = level === "h1" ? "h1" : level === "h3" ? "h3" : "h2";
+            return <Tag style={{ fontSize: level === "h1" ? "2.5rem" : level === "h3" ? "1.5rem" : "2rem" }}>{children}</Tag>;
+        },
+    },
+    image: {
+        render: ({ src, alt }) =>
+            src ? <img src={src} alt={alt || ""} style={{ maxWidth: "100%" }} /> : null,
+    },
+    button: {
+        render: ({ children, url }) => (
+            <a href={url || "#"} style={{ display: "inline-block", padding: "10px 20px", background: "#aa3bff", color: "#fff", borderRadius: "6px", textDecoration: "none" }}>
+                {children}
+            </a>
+        ),
+    },
+    quote: {
+        render: ({ children, author }) => (
+            <blockquote style={{ borderLeft: "4px solid #aa3bff", paddingLeft: "1rem", fontStyle: "italic" }}>
+                {children}
+                {author && <footer>- {author}</footer>}
+            </blockquote>
+        ),
+    },
+    columns: {
+        render: ({ columns }) => (
+            <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+                {columns?.map((col, i) => (
+                    <div key={i} style={{ flex: 1, minWidth: "200px", padding: "1rem", background: "#f3f4f6", borderRadius: "8px" }}>
+                        {col.children}
+                    </div>
+                ))}
+            </div>
+        ),
+    },
+    spacer: {
+        render: () => <div style={{ height: "2rem" }} />,
+    },
+};
 
 export default function Page() {
     const location = useLocation();
@@ -30,13 +72,15 @@ export default function Page() {
                 if (!response.ok) throw new Error(response.status === 404 ? t("page.notFound") : "Failed to load page");
                 const result = await response.json();
                 const loadedPage = result.data;
-                if (typeof loadedPage.content === "string") {
+                let content = loadedPage.content;
+                if (typeof content === "string") {
                     try {
-                        loadedPage.content = JSON.parse(loadedPage.content || "[]");
+                        content = JSON.parse(content || "{}");
                     } catch {
-                        loadedPage.content = [{ type: "richtext", content: loadedPage.content }];
+                        content = {};
                     }
                 }
+                loadedPage.content = content || {};
                 setPage(loadedPage);
             } catch (err) {
                 if (err.name !== "AbortError") setError(err.message);
@@ -75,23 +119,9 @@ export default function Page() {
                 <article className="page-article">
                     <Breadcrumbs items={[{ to: "/", label: t("nav.home") }, { label: page.title }]} />
                     <h1>{page.title}</h1>
-                    {Array.isArray(content) ? (
-                        <div className="page-blocks">
-                            {content.map((block, i) => (
-                                <BlockRenderer key={block.id || i} block={block} t={t} />
-                            ))}
-                        </div>
-                    ) : typeof content === "string" ? (
-                        isHtml(content) ? (
-                            <div className="prose" dangerouslySetInnerHTML={{ __html: content }} />
-                        ) : (
-                            <div className="prose"><p style={{ whiteSpace: "pre-wrap" }}>{content}</p></div>
-                        )
-                    ) : (
-                        <pre style={{ background: "var(--code-bg)", padding: 16, borderRadius: 12, overflow: "auto" }}>
-                            {JSON.stringify(content, null, 2)}
-                        </pre>
-                    )}
+                    <div className="page-blocks">
+                        <Render config={{ components: PUCK_COMPONENTS }} data={content} />
+                    </div>
                 </article>
                 <ProductRail />
             </main>
