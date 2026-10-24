@@ -1,0 +1,154 @@
+/* Page Build - Full screen like demo.puckeditor.com/edit */
+.page-build-page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+}
+
+.page-build-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 24px;
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    flex-wrap: wrap;
+}
+
+.page-build-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+}
+.page-build-back:hover {
+    background: var(--code-bg);
+    border-color: var(--accent);
+}
+
+.page-build-header h1 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    flex: 1;
+    text-align: center;
+}
+
+.page-build-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.page-build-save-btn {
+    padding: 10px 20px;
+    background: var(--accent);
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s;
+}
+.page-build-save-btn:hover:not(:disabled) {
+    opacity: 0.9;
+}
+.page-build-save-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.page-build-canvas {
+    flex: 1;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Puck editor fills the entire canvas */
+.page-build-canvas .puck-page-builder {
+    height: 100%;
+    min-height: calc(100vh - 64px);
+    display: flex;
+    flex-direction: column;
+}
+
+.page-build-canvas .puck-editor {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+/* Ensure Puck's internal layout gets full height */
+.page-build-canvas [class*="puck-editor__layout"],
+.page-build-canvas [class*="puck-editor__main"],
+.page-build-canvas [class*="puck-editor__canvas-wrapper"] {
+    flex: 1;
+    min-height: 0;
+}
+
+.page-build-fields {
+    padding: 16px 24px;
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--border);
+}
+
+.page-build-fields label {
+    display: block;
+    margin-bottom: 12px;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.page-build-fields input,
+.page-build-fields select {
+    display: block;
+    width: 100%;
+    max-width: 500px;
+    margin-top: 6px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+}
+
+.page-build-fields .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 8px;
+}
+
+@media (max-width: 760px) {
+    .page-build-fields .form-row {
+        grid-template-columns: 1fr;
+    }
+    .page-build-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .page-build-header h1 {
+        text-align: left;
+        order: -1;
+    }
+    .page-build-actions {
+        justify-content: flex-end;
+    }
+}
