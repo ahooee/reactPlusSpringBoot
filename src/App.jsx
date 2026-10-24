@@ -78,7 +78,7 @@ function App() {
                 <Route path="/admin/categories" element={<Admin><AdminCategories /></Admin>} />
                 <Route path="/admin/featured" element={<Admin><AdminFeatured /></Admin>} />
                 <Route path="/admin/pages" element={<Admin><AdminPages /></Admin>} />
-                <Route path="/admin/pages/build" element={<Admin><PageBuild /></Admin>} />
+                <Route path="/admin/pages/build" element={<ProtectedRoute adminOnly><PageBuild /></ProtectedRoute>} />
                 <Route path="/admin/menus" element={<Admin><AdminMenus /></Admin>} />
                 <Route path="/admin/media" element={<Admin><AdminMedia /></Admin>} />
                 <Route path="/admin/rail" element={<Admin><AdminRail /></Admin>} />

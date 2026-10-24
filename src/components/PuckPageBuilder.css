@@ -1,54 +1,34 @@
-/* Puck Page Builder wrapper - solid white background to prevent black screen */
+/* Puck Page Builder wrapper */
 .puck-page-builder {
     display: flex;
     flex-direction: column;
-    min-height: calc(100vh - 120px);
     height: 100%;
-    background: #ffffff !important;
-    color: #111827 !important;
-    outline: none;
+    min-height: 0;
+    background: #ffffff;
+    color: #111827;
     position: relative;
     overflow: hidden;
 }
 
-/* Puck editor fills available space - solid background */
-.puck-page-builder .puck-editor {
-    flex: 1;
-    min-height: 0;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    background: #ffffff !important;
-    color: #111827 !important;
-}
-
-/* Ensure Puck's internal layout and canvas get full height with solid background */
-.puck-page-builder [class*="puck-editor__layout"],
-.puck-page-builder [class*="puck-editor__main"],
-.puck-page-builder [class*="puck-editor__canvas-wrapper"],
-.puck-page-builder [class*="puck-canvas"] {
-    flex: 1;
-    min-height: 0;
-    height: 100%;
-    background: #ffffff !important;
-    color: #111827 !important;
-}
-
-/* Canvas area - must never collapse or go black */
-.puck-page-builder [class*="puck-editor__canvas"],
-.puck-page-builder [class*="canvas"] {
-    min-height: 600px;
-    flex: 1;
-    background: #ffffff !important;
-    color: #111827 !important;
-    overflow: auto !important;
-}
-
-/* Ensure all Puck block previews render with solid white background */
-.puck-page-builder [class*="puck-block"],
-.puck-page-builder [class*="puck-component"],
-.puck-page-builder section,
+/* Puck renders its own full-height editor; make sure it can fill the wrapper */
 .puck-page-builder > div {
-    background: #ffffff !important;
-    color: #111827 !important;
+    flex: 1;
+    min-height: 0;
+}
+
+/* Puck sizes its layout to 100dvh, which includes our header.
+   Constrain it to the remaining space instead. */
+.puck-page-builder .Puck {
+    overflow: hidden;
+}
+
+.puck-page-builder [class*="PuckLayout"] {
+    height: 100% !important;
+    min-height: 0 !important;
+}
+
+/* Fallback canvas background in case Puck's iframe is still loading */
+.puck-page-builder [data-puck-entry] {
+    background: #ffffff;
+    min-height: 100%;
 }

@@ -13,41 +13,73 @@ export default function PageBuild() {
     const [editing, setEditing] = useState(null);
     const [submitting, setSubmitting] = useState(false);
     const [searchParams] = useSearchParams();
+    const [loadedId, setLoadedId] = useState(null);
     const navigate = useNavigate();
     const { t } = useLanguage();
     usePageTitle(editing ? t("pages.edit") : t("pages.new"));
 
     const idParam = searchParams.get("id");
+    const slugParam = searchParams.get("slug");
+    const loadKey = idParam || slugParam;
 
     useEffect(() => {
-        if (idParam) {
-            apiFetch(`/api/pages/${idParam}`)
-                .then(p => {
-                    setEditing(p.id);
-                    setForm({
-                        title: p.title || "",
-                        slug: p.slug || "",
-                        content: typeof p.content === "string" ? p.content : JSON.stringify(p.content, null, 2),
-                        status: p.status || "PUBLISHED",
-                    });
-                })
-                .catch(() => {});
+        let cancelled = false;
+
+        if (!loadKey) {
+            return () => { cancelled = true; };
         }
-    }, [idParam]);
 
-    function handleChange(content) {
-        setForm({ ...form, content });
-    }
+        async function loadPage() {
+            try {
+                let page = null;
+                if (slugParam) {
+                    const res = await apiFetch(`/api/pages/${slugParam}`);
+                    page = res?.data ?? res;
+                } else {
+                    const list = await apiFetch("/api/pages");
+                    page = (Array.isArray(list) ? list : []).find(p => String(p.id) === String(idParam));
+                }
 
-    async function handlePublish(e) {
-        e.preventDefault();
+                if (cancelled || !page) return;
+                setEditing(page.id);
+                const raw = typeof page.content === "string" ? page.content : JSON.stringify(page.content, null, 2);
+                setForm({
+                    title: page.title || "",
+                    slug: page.slug || "",
+                    content: raw || "{}",
+                    status: page.status || "PUBLISHED",
+                });
+            } catch {
+                // leave the form empty; the user can still create a new page
+            } finally {
+                if (!cancelled) setLoadedId(loadKey);
+            }
+        }
+
+        loadPage();
+
+        return () => { cancelled = true; };
+    }, [idParam, slugParam, loadKey]);
+
+    const ready = !loadKey || loadedId === loadKey;
+
+    async function savePage(content) {
+        if (!form.title.trim()) {
+            alert(t("pages.nameRequired"));
+            return;
+        }
+        if (!form.slug.trim()) {
+            alert(t("pages.slugRequired"));
+            return;
+        }
+
         setSubmitting(true);
         try {
             const payload = {
                 title: form.title,
                 slug: form.slug,
-                content: form.content,
-                status: "PUBLISHED",
+                content: content ?? form.content,
+                status: form.status || "PUBLISHED",
             };
             if (editing) {
                 await apiFetch(`/api/pages/${editing}`, { method: "PUT", body: JSON.stringify(payload) });
@@ -57,46 +89,59 @@ export default function PageBuild() {
             navigate("/admin/pages");
         } catch (err) {
             alert(err.message || "Failed to save page");
+            throw err;
         } finally {
             setSubmitting(false);
         }
     }
 
-    function handleCancel() {
-        navigate("/admin/pages");
+    function handleChange(content) {
+        setForm(prev => ({ ...prev, content }));
+    }
+
+    function handlePuckPublish(data) {
+        const content = JSON.stringify(data, null, 2);
+        setForm(prev => ({ ...prev, content }));
+        savePage(content).catch(() => {});
+    }
+
+    if (!ready) {
+        return <div className="page-build-loading">{t("common.loading")}</div>;
     }
 
     return (
         <div className="page-build-page">
             <header className="page-build-header">
-                <button className="page-build-back" type="button" onClick={handleCancel}>
+                <button className="page-build-back" type="button" onClick={() => navigate("/admin/pages")}>
                     ← {t("pages.backToPages") || "Back to pages"}
                 </button>
-                <h1>{editing ? t("pages.edit") : t("pages.new")}</h1>
-                <div className="page-build-actions">
-                    <button type="button" className="page-build-save-btn" onClick={handlePublish} disabled={submitting}>
-                        {submitting ? t("pages.saving") || "Saving…" : (editing ? t("pages.save") : t("pages.create"))}
-                    </button>
+                <div className="page-build-fields">
+                    <label>
+                        <span>{t("pages.name")}</span>
+                        <input value={form.title} onChange={e => setForm(prev => ({ ...prev, title: e.target.value }))} required />
+                    </label>
+                    <label>
+                        <span>{t("pages.slug")}</span>
+                        <input value={form.slug} onChange={e => setForm(prev => ({ ...prev, slug: e.target.value }))} required placeholder="/about-us" />
+                    </label>
+                    <label className="page-build-status">
+                        <span>{t("pages.statusLabel")}</span>
+                        <select value={form.status} onChange={e => setForm(prev => ({ ...prev, status: e.target.value }))}>
+                            <option value="PUBLISHED">{t("pages.statusPublished")}</option>
+                            <option value="DRAFT">{t("pages.statusDraft")}</option>
+                        </select>
+                    </label>
                 </div>
+                <button type="button" className="page-build-save-btn" onClick={() => savePage()} disabled={submitting}>
+                    {submitting ? (t("pages.saving") || "Saving…") : (editing ? t("pages.save") : t("pages.create"))}
+                </button>
             </header>
             <main className="page-build-canvas">
-                <div className="page-build-fields">
-                    <label>{t("pages.name")}
-                        <input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required />
-                    </label>
-                    <div className="form-row">
-                        <label>{t("pages.slug")}
-                            <input value={form.slug} onChange={e => setForm({ ...form, slug: e.target.value })} required placeholder="/about-us" />
-                        </label>
-                        <label>{t("pages.statusLabel") || "Status"}
-                            <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value })}>
-                                <option value="PUBLISHED">{t("pages.statusPublished") || "Published"}</option>
-                                <option value="DRAFT">{t("pages.statusDraft") || "Draft"}</option>
-                            </select>
-                        </label>
-                    </div>
-                </div>
-                <PuckPageBuilder value={form.content} onChange={handleChange} />
+                <PuckPageBuilder
+                    value={form.content}
+                    onChange={handleChange}
+                    onPublish={handlePuckPublish}
+                />
             </main>
         </div>
     );

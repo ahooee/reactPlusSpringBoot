@@ -21,8 +21,8 @@ export default function AdminPages() {
         navigate("/admin/pages/build");
     }
 
-    function startEdit(id) {
-        navigate(`/admin/pages/build?id=${id}`);
+    function startEdit(page) {
+        navigate(`/admin/pages/build?id=${page.id}&slug=${encodeURIComponent(page.slug)}`);
     }
 
     async function remove(id) {
@@ -64,7 +64,7 @@ export default function AdminPages() {
                             </td>
                             <td>
                                 <div className="admin-actions">
-                                    <button className="small-btn" onClick={() => startEdit(p.id)}>
+                                    <button className="small-btn" onClick={() => startEdit(p)}>
                                         {t("common.edit")}
                                     </button>
                                     <button className="small-btn danger" onClick={() => remove(p.id)}>

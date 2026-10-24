@@ -1,24 +1,32 @@
-/* Page Build - Full screen like demo.puckeditor.com/edit */
+/* Page Build - full-screen Puck editor (no admin chrome) */
 .page-build-page {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
-    background: var(--bg);
-    color: var(--text);
+    background: #ffffff;
+    color: #111827;
+    overflow: hidden;
+}
+
+.page-build-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100svh;
+    font-size: 15px;
 }
 
 .page-build-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     gap: 16px;
-    padding: 12px 24px;
-    background: var(--card-bg);
-    border-bottom: 1px solid var(--border);
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    flex-wrap: wrap;
+    padding: 10px 16px;
+    background: #ffffff;
+    border-bottom: 1px solid var(--border, #e5e7eb);
+    flex: 0 0 auto;
+    z-index: 20;
 }
 
 .page-build-back {
@@ -27,34 +35,75 @@
     gap: 6px;
     padding: 8px 14px;
     background: transparent;
-    border: 1px solid var(--border);
+    border: 1px solid var(--border, #e5e7eb);
     border-radius: 8px;
-    color: var(--text);
+    color: inherit;
     font-size: 14px;
     cursor: pointer;
+    white-space: nowrap;
     transition: background 0.15s, border-color 0.15s;
 }
 .page-build-back:hover {
-    background: var(--code-bg);
-    border-color: var(--accent);
+    background: var(--code-bg, #f3f4f6);
+    border-color: var(--accent, #aa3bff);
 }
 
-.page-build-header h1 {
-    margin: 0;
-    font-size: 1.25rem;
-    font-weight: 600;
-    flex: 1;
-    text-align: center;
-}
-
-.page-build-actions {
+.page-build-fields {
     display: flex;
-    gap: 8px;
+    align-items: center;
+    gap: 14px;
+    flex: 1;
+    min-width: 0;
+}
+
+.page-build-fields label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 500;
+    font-size: 13px;
+    white-space: nowrap;
+    min-width: 0;
+}
+
+.page-build-fields label:first-child {
+    flex: 1 1 260px;
+    min-width: 160px;
+}
+
+.page-build-fields label:nth-child(2) {
+    flex: 1 1 220px;
+    min-width: 140px;
+}
+
+.page-build-fields .page-build-status {
+    flex: 0 0 auto;
+}
+
+.page-build-fields input,
+.page-build-fields select {
+    width: 100%;
+    min-width: 0;
+    padding: 8px 10px;
+    border: 1px solid var(--border, #e5e7eb);
+    border-radius: 8px;
+    background: #ffffff;
+    color: #111827;
+    font-size: 14px;
+    font-family: inherit;
+}
+
+.page-build-fields input:focus,
+.page-build-fields select:focus {
+    outline: 2px solid var(--accent-soft, rgba(170, 59, 255, 0.25));
+    outline-offset: 0;
+    border-color: var(--accent, #aa3bff);
 }
 
 .page-build-save-btn {
-    padding: 10px 20px;
-    background: var(--accent);
+    flex: 0 0 auto;
+    padding: 9px 20px;
+    background: var(--accent, #aa3bff);
     border: none;
     border-radius: 8px;
     color: #fff;
@@ -72,84 +121,30 @@
 }
 
 .page-build-canvas {
-    flex: 1;
-    padding: 0;
-    margin: 0;
-    overflow: visible;
-    position: relative;
+    flex: 1 1 auto;
     min-height: 0;
+    overflow: hidden;
+    position: relative;
+    margin: 0;
+    padding: 0;
 }
 
-/* Puck editor fills the entire canvas */
 .page-build-canvas .puck-page-builder {
     height: 100%;
-    min-height: calc(100vh - 64px);
-    display: flex;
-    flex-direction: column;
 }
 
-.page-build-canvas .puck-editor {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-}
-
-/* Ensure Puck's internal layout gets full height */
-.page-build-canvas [class*="puck-editor__layout"],
-.page-build-canvas [class*="puck-editor__main"],
-.page-build-canvas [class*="puck-editor__canvas-wrapper"] {
-    flex: 1;
-    min-height: 0;
-}
-
-.page-build-fields {
-    padding: 16px 24px;
-    background: var(--card-bg);
-    border-bottom: 1px solid var(--border);
-}
-
-.page-build-fields label {
-    display: block;
-    margin-bottom: 12px;
-    font-weight: 500;
-    font-size: 14px;
-}
-
-.page-build-fields input,
-.page-build-fields select {
-    display: block;
-    width: 100%;
-    max-width: 500px;
-    margin-top: 6px;
-    padding: 10px 12px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    background: var(--bg);
-    color: var(--text);
-    font-size: 14px;
-}
-
-.page-build-fields .form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-top: 8px;
-}
-
-@media (max-width: 760px) {
-    .page-build-fields .form-row {
-        grid-template-columns: 1fr;
-    }
+@media (max-width: 900px) {
     .page-build-header {
-        flex-direction: column;
-        align-items: stretch;
+        flex-wrap: wrap;
     }
-    .page-build-header h1 {
-        text-align: left;
-        order: -1;
+    .page-build-fields {
+        order: 3;
+        flex-basis: 100%;
+        flex-wrap: wrap;
     }
-    .page-build-actions {
-        justify-content: flex-end;
+    .page-build-fields label,
+    .page-build-fields label:first-child,
+    .page-build-fields label:nth-child(2) {
+        flex: 1 1 160px;
     }
 }

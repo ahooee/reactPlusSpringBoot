@@ -8,8 +8,10 @@ import { useLanguage } from "../context/LanguageContext";
 import { usePageTitle } from "../lib/usePageTitle";
 import { Render } from "@puckeditor/core";
 import "@puckeditor/core/puck.css";
+import { PUCK_COMPONENTS as BUILDER_COMPONENTS } from "../components/puckConfig";
 
-const PUCK_COMPONENTS = {
+/* Legacy block shapes kept so pages created with the old editor still render. */
+const LEGACY_PUCK_COMPONENTS = {
     text: {
         render: ({ children }) => <p>{children}</p>,
     },
@@ -90,7 +92,7 @@ export default function Page() {
             loadPage();
         }
         return () => controller.abort();
-    }, [slug]);
+    }, [slug, t]);
 
     if (error) {
         return (
@@ -120,7 +122,7 @@ export default function Page() {
                     <Breadcrumbs items={[{ to: "/", label: t("nav.home") }, { label: page.title }]} />
                     <h1>{page.title}</h1>
                     <div className="page-blocks">
-                        <Render config={{ components: PUCK_COMPONENTS }} data={content} />
+                        <Render config={{ components: { ...LEGACY_PUCK_COMPONENTS, ...BUILDER_COMPONENTS } }} data={content} />
                     </div>
                 </article>
                 <ProductRail />
