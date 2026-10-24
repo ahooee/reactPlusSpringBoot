@@ -1,17 +1,14 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import AdminLayout from "../../components/AdminLayout";
-import PuckPageBuilder from "../../components/PuckPageBuilder";
 import { apiFetch } from "../../lib/api";
 import { useLanguage } from "../../context/LanguageContext";
 import { usePageTitle } from "../../lib/usePageTitle";
 
-const empty = { title: "", slug: "", content: "{}", status: "PUBLISHED" };
-
 export default function AdminPages() {
     const [pages, setPages] = useState([]);
-    const [form, setForm] = useState(empty);
-    const [editing, setEditing] = useState(null);
     const { t } = useLanguage();
+    const navigate = useNavigate();
     usePageTitle(t("pages.title"));
 
     function load() {
@@ -20,30 +17,12 @@ export default function AdminPages() {
 
     useEffect(load, []);
 
-    function reset() {
-        setForm(empty);
-        setEditing(null);
+    function handleAdd() {
+        navigate("/admin/pages/build");
     }
 
-    async function handleSubmit(e) {
-        e.preventDefault();
-        if (editing) {
-            await apiFetch(`/api/pages/${editing}`, { method: "PUT", body: JSON.stringify(form) });
-        } else {
-            await apiFetch("/api/pages", { method: "POST", body: JSON.stringify(form) });
-        }
-        reset();
-        load();
-    }
-
-    function startEdit(p) {
-        setEditing(p.id);
-        setForm({
-            title: p.title || "",
-            slug: p.slug || "",
-            content: typeof p.content === "string" ? p.content : JSON.stringify(p.content, null, 2),
-            status: p.status || "PUBLISHED",
-        });
+    function startEdit(id) {
+        navigate(`/admin/pages/build?id=${id}`);
     }
 
     async function remove(id) {
@@ -54,40 +33,20 @@ export default function AdminPages() {
 
     return (
         <AdminLayout>
-            <h1>{t("pages.title")}</h1>
-            <form className="form" onSubmit={handleSubmit}>
-                <h3>{editing ? t("pages.edit") : t("pages.new")}</h3>
-                <label>{t("pages.name")}
-                    <input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required />
-                </label>
-                <div className="form-row">
-                    <label>{t("pages.slug")}
-                        <input value={form.slug} onChange={e => setForm({ ...form, slug: e.target.value })} required />
-                    </label>
-                    <label>{t("pages.statusLabel") || "Status"}
-                        <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value })}>
-                            <option value="PUBLISHED">{t("pages.statusPublished") || "Published"}</option>
-                            <option value="DRAFT">{t("pages.statusDraft") || "Draft"}</option>
-                        </select>
-                    </label>
-                </div>
-                <label style={{ marginTop: 16, display: "block", fontWeight: 600 }}>{t("pages.content")}</label>
-                <PuckPageBuilder
-                    key={editing ?? "new"}
-                    value={form.content}
-                    onChange={content => setForm({ ...form, content })}
-                />
-                <div style={{ marginTop: 16 }}>
-                    <button className="btn" type="submit">{editing ? t("pages.save") : t("pages.create")}</button>
-                    {editing && <button type="button" className="small-btn" style={{ marginLeft: 8 }} onClick={reset}>{t("pages.cancel")}</button>}
-                </div>
-            </form>
+            <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 16 }}>
+                <h1>{t("pages.title")}</h1>
+                <button className="btn" type="button" onClick={handleAdd}>
+                    {t("pages.addPage") || "+ Build Page"}
+                </button>
+            </div>
+            <p className="muted">{t("pages.hint")}</p>
 
-            <table className="admin-table" style={{ marginTop: 28 }}>
+            <table className="admin-table" style={{ marginTop: 16 }}>
                 <thead>
                     <tr>
                         <th>{t("pages.colTitle")}</th>
                         <th>{t("pages.colSlug")}</th>
+                        <th>{t("pages.statusLabel") || "Status"}</th>
                         <th>{t("common.actions")}</th>
                     </tr>
                 </thead>
@@ -97,9 +56,20 @@ export default function AdminPages() {
                             <td>{p.title}</td>
                             <td className="muted">/{p.slug}</td>
                             <td>
+                                <span
+                                    className={`status-chip ${p.status === "PUBLISHED" ? "published" : "draft"}`}
+                                >
+                                    {p.status === "PUBLISHED" ? t("pages.statusPublished") : t("pages.statusDraft")}
+                                </span>
+                            </td>
+                            <td>
                                 <div className="admin-actions">
-                                    <button className="small-btn" onClick={() => startEdit(p)}>{t("common.edit")}</button>
-                                    <button className="small-btn danger" onClick={() => remove(p.id)}>{t("common.delete")}</button>
+                                    <button className="small-btn" onClick={() => startEdit(p.id)}>
+                                        {t("common.edit")}
+                                    </button>
+                                    <button className="small-btn danger" onClick={() => remove(p.id)}>
+                                        {t("common.delete")}
+                                    </button>
                                 </div>
                             </td>
                         </tr>

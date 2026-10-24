@@ -20,6 +20,7 @@ import AdminProducts from "./pages/admin/AdminProducts";
 import AdminCategories from "./pages/admin/AdminCategories";
 import AdminFeatured from "./pages/admin/AdminFeatured";
 import AdminPages from "./pages/admin/AdminPages";
+import PageBuild from "./pages/admin/PageBuild";
 import AdminMenus from "./pages/admin/AdminMenus";
 import AdminMedia from "./pages/admin/AdminMedia";
 import AdminRail from "./pages/admin/AdminRail";
@@ -77,6 +78,7 @@ function App() {
                 <Route path="/admin/categories" element={<Admin><AdminCategories /></Admin>} />
                 <Route path="/admin/featured" element={<Admin><AdminFeatured /></Admin>} />
                 <Route path="/admin/pages" element={<Admin><AdminPages /></Admin>} />
+                <Route path="/admin/pages/build" element={<Admin><PageBuild /></Admin>} />
                 <Route path="/admin/menus" element={<Admin><AdminMenus /></Admin>} />
                 <Route path="/admin/media" element={<Admin><AdminMedia /></Admin>} />
                 <Route path="/admin/rail" element={<Admin><AdminRail /></Admin>} />
